@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum CurrencyCode {
+  PEN
+  USD
+}
+
+enum ThemePreference {
+  SYSTEM
+  LIGHT
+  DARK
+}
+
+model User {
+  id String @id @default(uuid()) @db.Uuid
+  email String @unique
+  passwordHash String
+  displayName String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  settings UserSettings?
+  refreshSessions RefreshSession[]
+  categories Category[]
+  transactions Transaction[]
+  recurringTransactions RecurringTransaction[]
+}
+model RefreshSession {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  tokenHash String @unique
+  expiresAt DateTime @db.Timestamptz(6)
+  revokedAt DateTime? @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+  @@index([userId, revokedAt, expiresAt])
+}
+model UserSettings {
+  userId String @id @db.Uuid
+  defaultCurrency CurrencyCode @default(PEN)
+  themePreference ThemePreference @default(SYSTEM)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+}
+model Category {
+  id String @id @default(uuid()) @db.Uuid
+  userId String? @db.Uuid
+  name String
+  type TransactionType
+  color String?
+  icon String?
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  user User? @relation(fields:[userId], references:[id], onDelete:Cascade)
+  transactions Transaction[]
+  recurringTransactions RecurringTransaction[]
+  @@index([userId, type, isActive])
+}
+model Transaction {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  categoryId String @db.Uuid
+  sourceRecurringTransactionId String? @db.Uuid
+  type TransactionType
+  amount Decimal @db.Decimal(19,4)
+  currencyCode CurrencyCode
+  description String?
+  occurredOn DateTime @db.Date
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+  category Category @relation(fields:[categoryId], references:[id], onDelete:Restrict)
+  sourceRecurringTransaction RecurringTransaction? @relation("RecordedOccurrences", fields:[sourceRecurringTransactionId], references:[id], onDelete:SetNull)
+  @@index([userId, occurredOn, type, currencyCode])
+  @@index([categoryId])
+}
+model RecurringTransaction {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  categoryId String @db.Uuid
+  type TransactionType
+  name String
+  amount Decimal @db.Decimal(19,4)
+  currencyCode CurrencyCode
+  billingDay Int
+  startsOn DateTime @db.Date
+  endsOn DateTime? @db.Date
+  isActive Boolean @default(true)
+  notes String?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+  category Category @relation(fields:[categoryId], references:[id], onDelete:Restrict)
+  recordedTransactions Transaction[] @relation("RecordedOccurrences")
+  @@index([userId, type, isActive, billingDay])
+}
