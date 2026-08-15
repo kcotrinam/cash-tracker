@@ -1,0 +1,21 @@
+# Dependencies and build output
+node_modules/
+.pnpm-store/
+.turbo/
+.next/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Environment files and local database state
+.env
+.env.local
+.env.*.local
+!.env.example
+infra/docker/.env
+
+# Editor and operating-system files
+.DS_Store
+.idea/
+.vscode/
+*.log

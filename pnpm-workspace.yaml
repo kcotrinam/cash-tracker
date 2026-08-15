@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+  - packages/*
+
+# These optional dependency scripts are intentionally not executed locally.
+ignoredBuiltDependencies:
+  - '@scarf/scarf'
+  - unrs-resolver
+allowBuilds:
+  '@scarf/scarf': false
+  unrs-resolver: false

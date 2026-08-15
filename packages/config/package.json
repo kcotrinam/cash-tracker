@@ -1,0 +1,13 @@
+{
+  "name": "@cashtracker/config",
+  "version": "0.1.0",
+  "private": true,
+  "files": [
+    "tsconfig.base.json",
+    "prettier.config.mjs"
+  ],
+  "exports": {
+    "./prettier": "./prettier.config.mjs",
+    "./tsconfig.base.json": "./tsconfig.base.json"
+  }
+}
