@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CashTracker - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#ffdad6",
+                        "secondary": "#c5c7c6",
+                        "secondary-fixed": "#e1e3e2",
+                        "on-secondary-container": "#b7b9b8",
+                        "primary-container": "#1a1c1e",
+                        "surface": "#0e141a",
+                        "on-background": "#dde3ec",
+                        "outline-variant": "#44474a",
+                        "on-tertiary-fixed": "#201b17",
+                        "inverse-on-surface": "#2b3138",
+                        "surface-container-highest": "#2f353c",
+                        "tertiary": "#cfc5be",
+                        "surface-tint": "#c6c6c9",
+                        "surface-dim": "#0e141a",
+                        "on-tertiary": "#352f2b",
+                        "tertiary-fixed": "#ebe0da",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#5d5e61",
+                        "on-primary": "#2f3133",
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#c5c6ca",
+                        "surface-container": "#1a2027",
+                        "on-error": "#690005",
+                        "on-secondary-fixed-variant": "#454747",
+                        "surface-container-lowest": "#090f15",
+                        "surface-container-low": "#161c23",
+                        "on-tertiary-fixed-variant": "#4c4641",
+                        "primary-fixed-dim": "#c6c6c9",
+                        "on-primary-fixed": "#1a1c1e",
+                        "tertiary-fixed-dim": "#cfc5be",
+                        "surface-bright": "#343a41",
+                        "on-surface": "#dde3ec",
+                        "on-primary-fixed-variant": "#454749",
+                        "tertiary-container": "#201b17",
+                        "secondary-fixed-dim": "#c5c7c6",
+                        "primary": "#c6c6c9",
+                        "background": "#0e141a",
+                        "inverse-surface": "#dde3ec",
+                        "on-tertiary-container": "#8b837d",
+                        "primary-fixed": "#e2e2e5",
+                        "surface-container-high": "#252b31",
+                        "secondary-container": "#474a49",
+                        "outline": "#8f9194",
+                        "on-secondary-fixed": "#191c1c",
+                        "surface-variant": "#2f353c",
+                        "on-primary-container": "#838486",
+                        "on-secondary": "#2e3131"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1200px",
+                        "touch-target-min": "48px",
+                        "gutter": "24px",
+                        "margin-desktop": "40px",
+                        "unit": "8px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Geist"],
+                        "mono-value": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "body-md": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "display-lg-mobile": ["Geist"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "mono-value": ["20px", { "lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-sm": ["13px", { "lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex items-center justify-center font-sans antialiased">
+<!-- Split Screen Container -->
+<main class="w-full max-w-container-max min-h-[800px] h-[90vh] mx-auto flex rounded-xl overflow-hidden shadow-2xl border border-outline-variant bg-surface-container-low my-8">
+<!-- Left Side: Brand & Visual (Hidden on mobile) -->
+<section class="hidden lg:flex w-1/2 flex-col justify-between p-12 bg-surface-container-lowest relative border-r border-outline-variant">
+<!-- Brand -->
+<div class="z-10">
+<div class="flex items-center gap-2 mb-8">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight">CashTracker</h1>
+</div>
+<h2 class="font-display-lg text-display-lg text-on-surface mb-4">Financial clarity<br/>without the noise.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">
+                    Designed for independent professionals who demand command over their data. High-end minimalism meets modern utility.
+                </p>
+</div>
+<!-- Abstract Data Visualization Placeholder Graphic -->
+<div class="absolute inset-0 top-1/3 left-1/4 opacity-40 mix-blend-screen pointer-events-none" data-alt="Abstract data visualization in a high-end minimalist dark theme. Glowing, delicate geometric lines and subtle bar chart forms rising in a dark void. Cool monochromatic color palette with soft silver and muted sage green accents against a deep ink black background. Mood is serene, precise, and technologically sophisticated, representing financial clarity and control. High contrast legibility, no clutter." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB1B4i5BrDLgqNyJvyJ0u6az_NTt_NAOTuZftu-S2x9B_GV3zAKflAFc2EgI2sRlziAyPEzCBlqlKmnYeczP6O5xeSmDKp4F5a2I5HvXEXpdaVBo5j7jHPeXt39sNkDE5JUjP_zLFpDAxZmwMIn2u3qvTlQsukNerqfdi2wGUcB5Zwy1tGhT3ZMm9dfwxfouxBCUyyCHKPrxWdd-FeHc4b6SHjSRQFMYtBmGPHnM3gZEyQ7J4Z610skhg')">
+<!-- Using placeholder background for the requested visual graphic -->
+<div class="w-full h-full bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent absolute inset-0"></div>
+</div>
+<!-- Testimonial/Social Proof -->
+<div class="z-10 mt-auto">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-tertiary">star</span>
+<span class="material-symbols-outlined text-tertiary">star</span>
+<span class="material-symbols-outlined text-tertiary">star</span>
+<span class="material-symbols-outlined text-tertiary">star</span>
+<span class="material-symbols-outlined text-tertiary">star</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant italic mb-2">"Finally, a financial tool that respects my focus."</p>
+<p class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Independent Pro</p>
+</div>
+</section>
+<!-- Right Side: Login Form -->
+<section class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 md:p-16 bg-surface">
+<div class="w-full max-w-sm">
+<!-- Mobile Logo (Visible only on smaller screens) -->
+<div class="lg:hidden flex flex-col items-center mb-10">
+<span class="material-symbols-outlined text-primary text-4xl mb-2" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tight">CashTracker</h1>
+</div>
+<div class="mb-10 text-center lg:text-left">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2">Welcome back</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Log in to your account to continue.</p>
+</div>
+<form class="space-y-6">
+<!-- Email Input -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="email">Email address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">mail</span>
+<input class="w-full h-touch-target-min bg-surface-container-high border border-outline-variant rounded-lg pl-12 pr-4 font-body-md text-body-md text-on-surface placeholder-on-surface-variant/50 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" id="email" name="email" placeholder="name@example.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password Input -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<label class="block font-label-sm text-label-sm text-on-surface-variant" for="password">Password</label>
+<a class="font-label-sm text-label-sm text-primary hover:text-on-surface transition-colors" href="#">Forgot password?</a>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">lock</span>
+<input class="w-full h-touch-target-min bg-surface-container-high border border-outline-variant rounded-lg pl-12 pr-12 font-body-md text-body-md text-on-surface placeholder-on-surface-variant/50 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<!-- Options -->
+<div class="flex items-center">
+<input class="h-4 w-4 rounded border-outline-variant bg-surface-container-high text-primary focus:ring-primary focus:ring-offset-surface" id="remember-me" name="remember-me" type="checkbox"/>
+<label class="ml-2 block font-body-md text-body-md text-on-surface-variant" for="remember-me">
+                            Remember me for 30 days
+                        </label>
+</div>
+<!-- Submit Button -->
+<button class="w-full h-touch-target-min flex justify-center items-center gap-2 bg-secondary text-surface font-label-sm text-label-sm uppercase tracking-wider rounded-lg hover:bg-on-surface active:scale-[0.98] transition-all duration-200" type="submit">
+                        Sign in to Workspace
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<!-- Divider -->
+<div class="relative py-4">
+<div aria-hidden="true" class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-outline-variant"></div>
+</div>
+<div class="relative flex justify-center">
+<span class="bg-surface px-4 font-label-sm text-label-sm text-on-surface-variant">Or continue with</span>
+</div>
+</div>
+<!-- SSO Buttons (Ghost Outlines) -->
+<div class="grid grid-cols-2 gap-4">
+<button class="h-touch-target-min flex justify-center items-center gap-2 border border-outline-variant bg-transparent text-on-surface rounded-lg hover:bg-surface-container-high active:bg-surface-container-highest transition-colors font-label-sm text-label-sm" type="button">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                            Google
+                        </button>
+<button class="h-touch-target-min flex justify-center items-center gap-2 border border-outline-variant bg-transparent text-on-surface rounded-lg hover:bg-surface-container-high active:bg-surface-container-highest transition-colors font-label-sm text-label-sm" type="button">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+                            Passkey
+                        </button>
+</div>
+</form>
+<p class="mt-8 text-center font-body-md text-body-md text-on-surface-variant">
+                    Don't have an account? <a class="text-primary hover:text-on-surface font-medium transition-colors" href="#">Request access</a>
+</p>
+</div>
+</section>
+</main>
+</body></html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CashTracker - Crear cuenta</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed-dim": "#c5c7c6",
+                      "primary-container": "#1a1c1e",
+                      "on-primary-fixed-variant": "#454749",
+                      "outline-variant": "#44474a",
+                      "on-tertiary-container": "#8b837d",
+                      "tertiary-fixed": "#ebe0da",
+                      "outline": "#8f9194",
+                      "error-container": "#93000a",
+                      "on-primary-container": "#838486",
+                      "background": "#0e141a",
+                      "on-tertiary-fixed": "#201b17",
+                      "primary-fixed": "#e2e2e5",
+                      "on-primary-fixed": "#1a1c1e",
+                      "surface": "#0e141a",
+                      "surface-container-low": "#161c23",
+                      "surface-variant": "#2f353c",
+                      "surface-bright": "#343a41",
+                      "on-primary": "#2f3133",
+                      "inverse-on-surface": "#2b3138",
+                      "inverse-primary": "#5d5e61",
+                      "surface-tint": "#c6c6c9",
+                      "on-background": "#dde3ec",
+                      "on-surface-variant": "#c5c6ca",
+                      "on-secondary-fixed-variant": "#454747",
+                      "on-secondary-fixed": "#191c1c",
+                      "tertiary-container": "#201b17",
+                      "secondary-container": "#474a49",
+                      "primary-fixed-dim": "#c6c6c9",
+                      "tertiary-fixed-dim": "#cfc5be",
+                      "on-secondary": "#2e3131",
+                      "surface-container-high": "#252b31",
+                      "secondary-fixed": "#e1e3e2",
+                      "on-surface": "#dde3ec",
+                      "on-error": "#690005",
+                      "surface-container-lowest": "#090f15",
+                      "surface-container": "#1a2027",
+                      "inverse-surface": "#dde3ec",
+                      "tertiary": "#cfc5be",
+                      "on-secondary-container": "#b7b9b8",
+                      "surface-dim": "#0e141a",
+                      "secondary": "#c5c7c6",
+                      "on-tertiary": "#352f2b",
+                      "error": "#ffb4ab",
+                      "on-error-container": "#ffdad6",
+                      "surface-container-highest": "#2f353c",
+                      "primary": "#c6c6c9",
+                      "on-tertiary-fixed-variant": "#4c4641"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "40px",
+                      "gutter": "24px",
+                      "container-max": "1200px",
+                      "touch-target-min": "48px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Geist"],
+                      "headline-md": ["Geist"],
+                      "body-lg": ["Geist"],
+                      "display-lg-mobile": ["Geist"],
+                      "label-sm": ["Geist"],
+                      "mono-value": ["Geist"],
+                      "body-md": ["Geist"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                      "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                      "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                      "display-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                      "label-sm": ["13px", { "lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                      "mono-value": ["20px", { "lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                      "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        /* Form Field Autofill Overrides for Dark Mode */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active{
+            -webkit-box-shadow: 0 0 0 30px #0e141a inset !important;
+            -webkit-text-fill-color: #dde3ec !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md h-screen w-full flex antialiased">
+<!-- Left Column: Branding & Value Prop (45%) -->
+<div class="hidden lg:flex flex-col w-[45%] bg-surface-container-low border-r border-outline-variant p-margin-desktop justify-between relative overflow-hidden">
+<!-- Logo -->
+<div class="z-10 flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-bold tracking-tight">CashTracker</span>
+</div>
+<!-- Content -->
+<div class="z-10 max-w-md mt-16 mb-auto">
+<h1 class="font-display-lg text-display-lg text-on-surface mb-6">
+                Empieza a entender mejor tus finanzas.
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                Registra tus ingresos, gastos y compromisos mensuales en un solo lugar.
+            </p>
+</div>
+<!-- Dashboard Preview Abstract -->
+<div class="z-10 relative w-full mt-12 rounded-xl border border-outline-variant bg-surface overflow-hidden shadow-2xl flex flex-col p-6">
+<div class="mb-6">
+<p class="text-on-surface-variant font-label-sm mb-1">Balance Total</p>
+<p class="text-on-surface font-display-lg-mobile">PEN 3,419.50</p>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="rounded-lg bg-surface-container border border-outline-variant p-4">
+<p class="text-on-surface-variant font-label-sm mb-1">Ingresos</p>
+<p class="text-on-surface font-mono-value">PEN 5,850.00</p>
+</div>
+<div class="rounded-lg bg-surface-container border border-outline-variant p-4">
+<p class="text-on-surface-variant font-label-sm mb-1">Gastos</p>
+<p class="text-on-surface font-mono-value">PEN 2,430.50</p>
+</div>
+</div>
+<div class="flex-1 rounded-lg bg-surface-container border border-outline-variant p-4">
+<p class="text-on-surface-variant font-label-sm mb-4">Transacciones Recientes</p>
+<div class="flex justify-between items-center mb-3">
+<span class="text-on-surface font-body-md">Proyecto Freelance</span>
+<span class="text-primary font-mono-value">+PEN 1,200.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface font-body-md">Alquiler</span>
+<span class="text-on-surface font-mono-value">-PEN 1,200.00</span>
+</div>
+</div>
+</div>
+<!-- Abstract Background element -->
+<div class="absolute inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at top right, #343a41 0%, transparent 40%);"></div>
+</div>
+<!-- Right Column: Registration Form (55%) -->
+<div class="w-full lg:w-[55%] flex flex-col items-center justify-center p-margin-mobile lg:p-margin-desktop bg-background relative">
+<!-- Mobile Logo (visible only on small screens) -->
+<div class="lg:hidden absolute top-8 left-margin-mobile flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-bold tracking-tight">CashTracker</span>
+</div>
+<!-- Form Container -->
+<div class="w-full max-w-[400px]">
+<div class="mb-8">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2">Crea tu cuenta</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    Comienza a organizar tus finanzas personales.
+                </p>
+</div>
+<form class="flex flex-col gap-6" onsubmit="event.preventDefault();">
+<!-- Nombre completo -->
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface" for="name">Nombre completo</label>
+<input class="h-touch-target-min px-4 bg-surface-container-low border border-outline-variant rounded-lg text-on-surface font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-on-surface-variant/50" id="name" name="name" placeholder="Juan Pérez" required="" type="text" value="Juan Pérez"/>
+</div>
+<!-- Correo electrónico -->
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface" for="email">Correo electrónico</label>
+<input class="h-touch-target-min px-4 bg-surface-container-low border border-outline-variant rounded-lg text-on-surface font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-on-surface-variant/50 border-error" id="email" name="email" placeholder="juan@ejemplo.com" required="" type="email" value="juan@ejemplo"/><div class="flex items-center gap-1 mt-1 text-error font-label-sm"><span class="material-symbols-outlined text-[16px]">error</span><span>Ingresa un correo electrónico válido.</span></div>
+</div>
+<!-- Contraseña -->
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface" for="password">Contraseña</label>
+<div class="relative">
+<input class="w-full h-touch-target-min px-4 bg-surface-container-low border border-outline-variant rounded-lg text-on-surface font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-on-surface-variant/50 pr-12" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div>
+<p class="text-on-surface-variant/70 font-label-sm mt-1">Mínimo 10 caracteres.</p>
+</div>
+<!-- Confirmar Contraseña -->
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface" for="confirm_password">Confirmar contraseña</label>
+<div class="relative">
+<input class="w-full h-touch-target-min px-4 bg-surface-container-low border border-outline-variant rounded-lg text-on-surface font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-on-surface-variant/50 pr-12 border-error" id="confirm_password" name="confirm_password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div><div class="flex items-center gap-1 mt-1 text-error font-label-sm"><span class="material-symbols-outlined text-[16px]">error</span><span>Las contraseñas no coinciden.</span></div>
+</div>
+<!-- Submit Button -->
+<button class="h-touch-target-min mt-2 w-full bg-secondary text-on-secondary font-label-sm text-label-sm rounded-lg hover:bg-secondary-fixed transition-colors focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-background flex items-center justify-center font-bold" type="submit">
+                    Crear cuenta
+                </button>
+</form>
+<!-- Login Link -->
+<div class="mt-8 text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    ¿Ya tienes una cuenta? 
+                    <a class="text-primary hover:text-primary-fixed transition-colors font-medium ml-1" href="#">
+                        Iniciar sesión
+                    </a>
+</p>
+</div>
+</div>
+</div>
+</body></html>
