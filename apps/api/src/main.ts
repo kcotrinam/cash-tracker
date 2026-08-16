@@ -1,5 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -8,6 +10,8 @@ import type { AppConfiguration } from './config/configuration';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get<ConfigService<AppConfiguration>>(ConfigService);
+  app.use(helmet());
+  app.use(cookieParser());
 
   app.enableCors({
     origin: config.getOrThrow('corsOrigins'),
