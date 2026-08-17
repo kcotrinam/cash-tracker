@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { AppShell } from '../components/app-shell';
 import { dashboardMockDataSource } from './dashboard.mock';
 import { formatMoney, toCents } from './money';
 import type { CurrencyCode, DashboardData } from './dashboard.types';
@@ -53,7 +54,7 @@ function Icon({ name }: { name: string }) {
   return (
     <svg
       aria-hidden="true"
-      className="size-5 fill-none stroke-current"
+      className="size-5 shrink-0 fill-none stroke-current"
       viewBox="0 0 24 24"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -61,105 +62,6 @@ function Icon({ name }: { name: string }) {
     >
       <path d={paths[name] ?? paths.dots} />
     </svg>
-  );
-}
-function Shell({ children }: { children: React.ReactNode }) {
-  const availableItems = [
-    { href: '/transactions', icon: 'receipt', label: 'Movimientos' },
-    { href: '/transactions/new', icon: 'plus', label: 'Añadir movimiento' },
-  ];
-  const unavailableItems = [
-    { icon: 'repeat', label: 'Recurrentes' },
-    { icon: 'settings', label: 'Configuración' },
-  ];
-
-  return (
-    <div className="dashboard-screen min-h-[100dvh] bg-[var(--background)] text-[var(--foreground)]">
-      <aside className="group fixed inset-y-0 left-0 z-30 hidden w-20 overflow-hidden border-r border-[var(--border)] bg-[var(--surface-lowest)] px-3 py-5 transition-[width] duration-300 ease-out hover:w-60 focus-within:w-60 md:flex md:flex-col">
-        <div className="flex h-12 min-w-[216px] items-center gap-4">
-          <span className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]">
-            <Icon name="wallet" />
-          </span>
-          <span className="whitespace-nowrap text-sm font-semibold tracking-[-0.02em] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-            CashTracker
-          </span>
-        </div>
-        <nav aria-label="Navegación principal" className="mt-10 min-w-[216px] space-y-2">
-          <a
-            aria-current="page"
-            className="flex h-12 w-12 items-center rounded-lg bg-[var(--nav-active)] px-[14px] text-[var(--foreground)] transition-[width] duration-300 ease-out group-hover:w-full group-focus-within:w-full"
-            href="/dashboard"
-            title="Dashboard"
-          >
-            <Icon name="dashboard" />
-            <span className="ml-4 whitespace-nowrap text-sm font-medium opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-              Dashboard
-            </span>
-          </a>
-          {availableItems.map((item) => (
-            <a
-              className="flex h-12 w-12 items-center rounded-lg px-[14px] text-[var(--muted-foreground)] transition-[width,background-color,color] duration-300 ease-out hover:w-full hover:bg-[var(--surface-low)] hover:text-[var(--foreground)] group-focus-within:w-full"
-              href={item.href}
-              key={item.label}
-              title={item.label}
-            >
-              <Icon name={item.icon} />
-              <span className="ml-4 whitespace-nowrap text-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-                {item.label}
-              </span>
-            </a>
-          ))}
-          {unavailableItems.map((item) => (
-            <span
-              aria-disabled="true"
-              className="flex h-12 w-12 cursor-not-allowed items-center rounded-lg px-[14px] text-[var(--muted-foreground)] transition-[width,background-color,color] duration-300 ease-out group-hover:w-full group-hover:bg-[var(--surface-low)] group-hover:text-[var(--foreground)] group-focus-within:w-full"
-              key={item.label}
-              title={`${item.label}: próximamente`}
-            >
-              <Icon name={item.icon} />
-              <span className="ml-4 whitespace-nowrap text-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-                {item.label}
-              </span>
-            </span>
-          ))}
-        </nav>
-      </aside>
-      <div className="pb-[84px] md:ml-20 md:pb-0">{children}</div>
-      <nav
-        aria-label="Navegación principal"
-        className="fixed inset-x-0 bottom-0 z-20 flex h-[76px] items-center justify-around border-t border-[var(--border)] bg-[var(--surface-lowest)] px-3 pb-[env(safe-area-inset-bottom)] md:hidden"
-      >
-        <a
-          aria-current="page"
-          className="flex min-h-11 min-w-16 flex-col items-center justify-center gap-1 rounded-lg bg-[var(--nav-active)] px-2 text-xs font-medium"
-          href="/dashboard"
-        >
-          <Icon name="dashboard" />
-          Dashboard
-        </a>
-        <a
-          className="flex min-h-11 min-w-16 flex-col items-center justify-center gap-1 px-2 text-xs text-[var(--muted-foreground)]"
-          href="/transactions"
-        >
-          <Icon name="receipt" />
-          Movimientos
-        </a>
-        <a
-          className="flex min-h-11 min-w-16 flex-col items-center justify-center gap-1 px-2 text-xs text-[var(--muted-foreground)]"
-          href="/transactions/new"
-        >
-          <Icon name="plus" />
-          Añadir
-        </a>
-        <span
-          aria-disabled="true"
-          className="flex min-h-11 min-w-16 flex-col items-center justify-center gap-1 px-2 text-xs text-[var(--muted-foreground)]"
-        >
-          <Icon name="repeat" />
-          Próximamente
-        </span>
-      </nav>
-    </div>
   );
 }
 function Summary({ data }: { data: DashboardData }) {
@@ -443,7 +345,7 @@ export function DashboardClient() {
     router.replace(`${pathname}?${next.toString()}`, { scroll: false });
   }
   return (
-    <Shell>
+    <AppShell active="dashboard" screenClassName="dashboard-screen">
       <header className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-sm">
         <div className="mx-auto flex min-h-16 max-w-[1200px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-10">
           <div className="flex items-center gap-3">
@@ -516,6 +418,6 @@ export function DashboardClient() {
           )
         )}
       </main>
-    </Shell>
+    </AppShell>
   );
 }

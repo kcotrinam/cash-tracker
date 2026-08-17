@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { FormEvent, useEffect, useId, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { AppShell } from '../components/app-shell';
 
 const api = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 type Type = 'EXPENSE' | 'INCOME';
@@ -27,73 +28,6 @@ type Item = {
 const today = new Date().toLocaleDateString('en-CA');
 const input =
   'mt-2 h-12 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-base outline-none focus:border-[var(--focus-ring)] focus:ring-1 focus:ring-[var(--focus-ring)]';
-function Icon({ children }: { children: string }) {
-  return (
-    <span aria-hidden="true" className="text-lg">
-      {children}
-    </span>
-  );
-}
-export function TransactionShell({
-  active,
-  children,
-}: {
-  active: 'list' | 'new';
-  children: React.ReactNode;
-}) {
-  const links = [
-    { href: '/dashboard', label: 'Dashboard', icon: '◫' },
-    { href: '/transactions', label: 'Movimientos', icon: '▤', key: 'list' },
-    { href: '/transactions/new', label: 'Añadir movimiento', icon: '+', key: 'new' },
-  ];
-  return (
-    <div className="transactions-screen min-h-[100dvh] bg-[var(--background)] text-[var(--foreground)]">
-      <aside className="fixed inset-y-0 hidden w-64 border-r border-[var(--border)] bg-[var(--surface-lowest)] p-6 md:block">
-        <Link
-          className="mb-12 flex items-center gap-3 text-xl font-semibold"
-          href="/dashboard"
-        >
-          <span className="grid size-8 place-items-center rounded-full bg-[var(--primary)] text-[var(--primary-foreground)]">
-            ◒
-          </span>
-          CashTracker
-        </Link>
-        <nav aria-label="Navegación principal" className="space-y-2">
-          {links.map((link) => (
-            <Link
-              aria-current={link.key === active ? 'page' : undefined}
-              className={`flex min-h-12 items-center gap-3 rounded-lg px-4 ${link.key === active ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]'}`}
-              href={link.href}
-              key={link.href}
-            >
-              <Icon>{link.icon}</Icon>
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-      </aside>
-      <main className="mx-auto max-w-6xl px-4 pb-24 pt-6 md:ml-64 md:px-10 md:py-12">
-        {children}
-      </main>
-      <nav
-        aria-label="Navegación principal"
-        className="fixed inset-x-0 bottom-0 z-20 flex h-[76px] justify-around border-t border-[var(--border)] bg-[var(--surface-lowest)] px-2 pb-[env(safe-area-inset-bottom)] md:hidden"
-      >
-        {links.slice(1).map((link) => (
-          <Link
-            aria-current={link.key === active ? 'page' : undefined}
-            className={`flex min-w-28 flex-col items-center justify-center text-xs ${link.key === active ? 'text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}`}
-            href={link.href}
-            key={link.href}
-          >
-            <Icon>{link.icon}</Icon>
-            {link.label}
-          </Link>
-        ))}
-      </nav>
-    </div>
-  );
-}
 function money(value: string, currency: Currency) {
   return new Intl.NumberFormat('es-PE', {
     style: 'currency',
@@ -286,7 +220,8 @@ export function NewTransaction() {
     }
   }
   return (
-    <TransactionShell active="new">
+    <AppShell active="new" screenClassName="transactions-screen">
+      <main className="mx-auto max-w-6xl px-4 py-6 md:px-10 md:py-12">
       <Link
         className="mb-8 inline-flex min-h-11 items-center text-sm text-[var(--muted-foreground)]"
         href="/transactions"
@@ -423,7 +358,8 @@ export function NewTransaction() {
           </button>
         </form>
       </div>
-    </TransactionShell>
+      </main>
+    </AppShell>
   );
 }
 export function TransactionList() {
@@ -463,7 +399,8 @@ export function TransactionList() {
     params.has(k),
   );
   return (
-    <TransactionShell active="list">
+    <AppShell active="transactions" screenClassName="transactions-screen">
+      <main className="mx-auto max-w-6xl px-4 py-6 md:px-10 md:py-12">
       <div className="flex flex-wrap items-end justify-between gap-5">
         <div>
           <h1 className="text-[32px] font-semibold tracking-[-.03em] md:text-5xl">
@@ -647,6 +584,7 @@ export function TransactionList() {
           </nav>
         </>
       )}
-    </TransactionShell>
+      </main>
+    </AppShell>
   );
 }

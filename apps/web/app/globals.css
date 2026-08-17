@@ -72,6 +72,7 @@
   --background: #0e141a;
   --foreground: #dde3ec;
   --surface: #161c23;
+  --surface-low: #11181f;
   --surface-raised: #252b31;
   --surface-lowest: #090f15;
   --muted-foreground: #b7bdc5;
@@ -79,6 +80,7 @@
   --focus-ring: #dbe4df;
   --primary: #d7ded9;
   --primary-foreground: #172019;
+  --nav-active: #2e3a38;
   --destructive: #93000a;
   --destructive-foreground: #ffdad6;
   color-scheme: dark;
