@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { CategoriesModule } from './categories/categories.module';
 import { RecurringTransactionsModule } from './recurring-transactions/recurring-transactions.module';
+import { SettingsModule } from './settings/settings.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { RecurringTransactionsModule } from './recurring-transactions/recurring-
     AuthModule,
     TransactionsModule,
     RecurringTransactionsModule,
+    SettingsModule,
+    UsersModule,
   ],
 })
 export class AppModule {}

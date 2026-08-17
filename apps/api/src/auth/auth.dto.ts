@@ -9,3 +9,9 @@ export class LoginDto {
   @ApiProperty() @IsEmail() email!: string;
   @ApiProperty() @IsString() @MaxLength(128) password!: string;
 }
+
+export class ChangePasswordDto {
+  @IsString() @MaxLength(128) currentPassword!: string;
+  @IsString() @Length(10, 128) newPassword!: string;
+  @IsString() @MaxLength(128) confirmPassword!: string;
+}

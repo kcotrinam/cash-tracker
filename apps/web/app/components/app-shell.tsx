@@ -53,7 +53,7 @@ export function AppIcon({ name }: { name: AppIconName }) {
   );
 }
 
-export type AppShellPage = 'dashboard' | 'transactions' | 'new' | 'recurring';
+export type AppShellPage = 'dashboard' | 'transactions' | 'new' | 'recurring' | 'settings';
 
 const navigationItems: {
   href: string;
@@ -65,10 +65,7 @@ const navigationItems: {
   { href: '/transactions', icon: 'receipt', id: 'transactions', label: 'Movimientos' },
   { href: '/transactions/new', icon: 'plus', id: 'new', label: 'Añadir movimiento' },
   { href: '/recurring', icon: 'repeat', id: 'recurring', label: 'Recurrentes' },
-];
-
-const comingSoonItems: { icon: AppIconName; label: string }[] = [
-  { icon: 'settings', label: 'Configuración' },
+  { href: '/settings', icon: 'settings', id: 'settings', label: 'Configuración' },
 ];
 
 export function AppShell({
@@ -138,19 +135,6 @@ export function AppShell({
               </Link>
             );
           })}
-          {comingSoonItems.map((item) => (
-            <span
-              aria-disabled="true"
-              className="flex h-12 w-12 cursor-not-allowed items-center rounded-lg px-[14px] text-[var(--muted-foreground)] transition-[width,background-color,color] duration-300 ease-out group-hover:w-full group-hover:bg-[var(--surface-low)] group-hover:text-[var(--foreground)] group-focus-within:w-full"
-              key={item.label}
-              title={`${item.label}: próximamente`}
-            >
-              <AppIcon name={item.icon} />
-              <span className="ml-4 whitespace-nowrap text-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-                {item.label}
-              </span>
-            </span>
-          ))}
         </nav>
       </aside>
       <div className="pb-[84px] md:ml-20 md:pb-0">{children}</div>

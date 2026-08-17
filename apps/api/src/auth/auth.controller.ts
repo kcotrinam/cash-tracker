@@ -3,7 +3,7 @@ import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import type { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Throttle } from '@nestjs/throttler';
-import { AuthService } from './auth.service'; import { LoginDto, RegisterDto } from './auth.dto'; import { AccessTokenGuard } from './access-token.guard'; import { CurrentUser } from './current-user.decorator';
+import { AuthService } from './auth.service'; import { ChangePasswordDto, LoginDto, RegisterDto } from './auth.dto'; import { AccessTokenGuard } from './access-token.guard'; import { CurrentUser } from './current-user.decorator';
 @ApiTags('auth') @Controller('auth')
 export class AuthController {
   constructor(private auth: AuthService, private config: ConfigService) {}
@@ -12,5 +12,6 @@ export class AuthController {
   @Post('login') @HttpCode(200) @Throttle({ default: { limit: 10, ttl: 60000 } }) async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) { const result = await this.auth.login(dto); this.set(res, result); return { user: result.user }; }
   @Post('refresh') @HttpCode(200) @Throttle({ default: { limit: 20, ttl: 60000 } }) async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) { const result = await this.auth.refresh(req.cookies?.cashtracker_refresh ?? ''); this.set(res, result); return {}; }
   @Post('logout') @HttpCode(204) async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) { await this.auth.logout(req.cookies?.cashtracker_refresh); res.clearCookie('cashtracker_access', { path: '/' }); res.clearCookie('cashtracker_refresh', { path: '/auth' }); }
+  @Post('change-password') @HttpCode(200) @ApiCookieAuth() @UseGuards(AccessTokenGuard) @Throttle({ default: { limit: 5, ttl: 60000 } }) async changePassword(@CurrentUser() user: { id: string }, @Body() dto: ChangePasswordDto, @Res({ passthrough: true }) res: Response) { const result = await this.auth.changePassword(user.id, dto); this.set(res, result); return {}; }
   @Get('me') @ApiCookieAuth() @UseGuards(AccessTokenGuard) async me(@CurrentUser() user: { id: string }) { return { user: await this.auth.me(user.id) }; }
 }

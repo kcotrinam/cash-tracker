@@ -7,6 +7,7 @@ export const defaultCategories = [
     name: 'Otros ingresos',
     normalizedName: 'otros ingresos',
     type: TransactionType.INCOME,
+    isFallback: true,
   },
   { name: 'Vivienda', normalizedName: 'vivienda', type: TransactionType.EXPENSE },
   { name: 'Alimentación', normalizedName: 'alimentacion', type: TransactionType.EXPENSE },
@@ -18,5 +19,10 @@ export const defaultCategories = [
     normalizedName: 'entretenimiento',
     type: TransactionType.EXPENSE,
   },
-  { name: 'Otros gastos', normalizedName: 'otros gastos', type: TransactionType.EXPENSE },
+  {
+    name: 'Otros gastos',
+    normalizedName: 'otros gastos',
+    type: TransactionType.EXPENSE,
+    isFallback: true,
+  },
 ] as const;

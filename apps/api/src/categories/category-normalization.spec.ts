@@ -24,4 +24,10 @@ test('defines the ten idempotent defaults with the expected transaction types', 
   );
   assert.ok(defaultCategories.some((category) => category.name === 'Otros gastos'));
   assert.ok(defaultCategories.some((category) => category.name === 'Otros ingresos'));
+  assert.deepEqual(
+    defaultCategories
+      .filter((category) => 'isFallback' in category && category.isFallback)
+      .map((category) => category.name),
+    ['Otros ingresos', 'Otros gastos'],
+  );
 });

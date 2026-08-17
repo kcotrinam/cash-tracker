@@ -11,7 +11,7 @@ import * as argon2 from 'argon2';
 import { randomBytes, createHash } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CategoriesService } from '../categories/categories.service';
-import { LoginDto, RegisterDto } from './auth.dto';
+import { ChangePasswordDto, LoginDto, RegisterDto } from './auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +25,7 @@ export class AuthService {
     id: string;
     email: string;
     displayName: string;
-    settings: { defaultCurrency: string; themePreference: string } | null;
+    settings: { defaultCurrency: string; timezone: string; themePreference: string } | null;
   }) {
     return {
       id: user.id,
@@ -119,5 +119,23 @@ export class AuthService {
         where: { tokenHash: this.hashToken(token), revokedAt: null },
         data: { revokedAt: new Date() },
       });
+  }
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    if (dto.newPassword !== dto.confirmPassword)
+      throw new ConflictException('Las contraseñas nuevas no coinciden.');
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !(await argon2.verify(user.passwordHash, dto.currentPassword)))
+      throw new UnauthorizedException('La contraseña actual es incorrecta.');
+    if (await argon2.verify(user.passwordHash, dto.newPassword))
+      throw new ConflictException('La nueva contraseña debe ser diferente a la actual.');
+    const passwordHash = await argon2.hash(dto.newPassword, { type: argon2.argon2id });
+    await this.prisma.$transaction([
+      this.prisma.user.update({ where: { id: userId }, data: { passwordHash } }),
+      this.prisma.refreshSession.updateMany({
+        where: { userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      }),
+    ]);
+    return this.tokens(userId);
   }
 }

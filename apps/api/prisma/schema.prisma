@@ -64,6 +64,7 @@ model RefreshSession {
 model UserSettings {
   userId          String          @id @db.Uuid
   defaultCurrency CurrencyCode    @default(PEN)
+  timezone        String          @default("America/Lima")
   themePreference ThemePreference @default(SYSTEM)
   createdAt       DateTime        @default(now()) @db.Timestamptz(6)
   updatedAt       DateTime        @updatedAt @db.Timestamptz(6)
@@ -79,6 +80,7 @@ model Category {
   color                 String?
   icon                  String?
   isDefault             Boolean                @default(false)
+  isFallback            Boolean                @default(false)
   isActive              Boolean                @default(true)
   createdAt             DateTime               @default(now()) @db.Timestamptz(6)
   updatedAt             DateTime               @updatedAt @db.Timestamptz(6)
