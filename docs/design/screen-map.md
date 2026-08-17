@@ -208,14 +208,20 @@ Route: `/dashboard`
 
 | State | Viewport | Reference | Status |
 | --- | --- | --- | --- |
-| Populated | Mobile, 390px | `references/stitch/dashboard/dashboard-default-mobile-390x844.png` | Approved |
-| Populated | Desktop, 1440px | `references/stitch/dashboard/dashboard-default-desktop-1440x900.png` | Approved |
+| Populated | Mobile, 390px | `references/dashboard_mobile/screen.png` | Approved — implementation capture pending |
+| Populated | Desktop, 1440px | `references/dashboard_desktop/screen.png` | Approved — implementation capture pending |
 | Empty | Mobile | Not available | Missing |
 | Empty | Desktop | Not available | Missing |
 | Loading | Mobile | Not available | Missing |
 | Loading | Desktop | Not available | Missing |
 | Error | Mobile | Not available | Missing |
 | Error | Desktop | Not available | Missing |
+
+#### Implementation notes
+
+- `/dashboard` uses a typed `DashboardDataSource` mock boundary; replace `dashboardMockDataSource` with the generated API client when that endpoint is available.
+- The implementation deliberately removes the Stitch placeholder actions, fabricated comparisons, broken navigation destinations, and floating action button. It uses accessible local month/currency controls, semantic tables/lists, readable mobile rows, and a text equivalent for the spending distribution.
+- Loading, empty, and error states are available in development through `?state=loading`, `?state=empty`, and `?state=error`. Visual capture and browser-based responsive/accessibility review remain pending because no browser was available during implementation.
 
 ## Remaining product screens
 
@@ -233,7 +239,7 @@ Route: `/dashboard`
 | --- | --- | --- | --- |
 | `/login` | No | No | No |
 | `/register` | No | No | No |
-| `/dashboard` | No | No | No |
+| `/dashboard` | Yes — typed mock boundary | Pending browser capture | Code review complete; browser audit pending |
 | `/transactions` | No | No | No |
 | `/recurring` | No | No | No |
 | `/categories` | No | No | No |

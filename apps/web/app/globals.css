@@ -50,6 +50,24 @@
   caret-color: var(--foreground);
 }
 
+.dashboard-screen {
+  --background: #0e141a;
+  --foreground: #dde3ec;
+  --surface: #161c23;
+  --surface-low: #11181f;
+  --surface-lowest: #090f15;
+  --muted-foreground: #b7bdc5;
+  --border: #303941;
+  --focus-ring: #dbe4df;
+  --primary: #d7ded9;
+  --primary-foreground: #172019;
+  --income: #a9c6ad;
+  --expense: #e3aaa2;
+  --bar-track: #28313a;
+  --nav-active: #2e3a38;
+  color-scheme: dark;
+}
+
 .auth-screen ::-webkit-scrollbar {
   width: 10px;
 }
