@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { FormEvent, useEffect, useId, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { authenticatedFetch } from '../authenticated-fetch';
 import { AppShell } from '../components/app-shell';
 
 const api = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
@@ -144,7 +145,7 @@ export function NewTransaction() {
     const search = categoryQuery.trim()
       ? `&search=${encodeURIComponent(categoryQuery)}`
       : '';
-    fetch(`${api}/categories?type=${type}${search}`, {
+    authenticatedFetch(`${api}/categories?type=${type}${search}`, {
       credentials: 'include',
       signal: controller.signal,
     })
@@ -172,7 +173,7 @@ export function NewTransaction() {
     if (!name) return;
     setCreatingCategory(true);
     try {
-      const response = await fetch(`${api}/categories`, {
+      const response = await authenticatedFetch(`${api}/categories`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -205,7 +206,7 @@ export function NewTransaction() {
       return setError('Ingresa una fecha válida.');
     setSaving(true);
     try {
-      const r = await fetch(`${api}/transactions`, {
+      const r = await authenticatedFetch(`${api}/transactions`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -386,11 +387,11 @@ export function TransactionList() {
       sessionStorage.removeItem('cashtracker-transaction-success');
       queueMicrotask(() => setSuccess(true));
     }
-    fetch(`${api}/categories`, { credentials: 'include' })
+    authenticatedFetch(`${api}/categories`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((payload) => setCategories(Array.isArray(payload) ? payload : []))
       .catch(() => setCategories([]));
-    fetch(`${api}/transactions?${query}`, { credentials: 'include' })
+    authenticatedFetch(`${api}/transactions?${query}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(setData)
       .catch(() => setError(true));

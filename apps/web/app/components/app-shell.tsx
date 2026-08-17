@@ -1,5 +1,9 @@
+'use client';
+
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
+import type { MouseEvent, ReactNode } from 'react';
+import { authenticatedFetch, getApiUrl, SessionExpiredError } from '../authenticated-fetch';
 
 export type AppIconName =
   | 'dashboard'
@@ -52,6 +56,28 @@ const comingSoonItems: { icon: AppIconName; label: string }[] = [
 ];
 
 export function AppShell({ active, children, screenClassName }: { active: AppShellPage; children: ReactNode; screenClassName: string }) {
+  const router = useRouter();
+
+  async function navigate(event: MouseEvent<HTMLAnchorElement>, href: string, selected: boolean) {
+    if (
+      selected ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.shiftKey
+    )
+      return;
+
+    event.preventDefault();
+    try {
+      await authenticatedFetch(`${getApiUrl()}/auth/me`);
+    } catch (error) {
+      if (error instanceof SessionExpiredError) return;
+    }
+    router.push(href);
+  }
+
   return (
     <div className={`${screenClassName} min-h-[100dvh] bg-[var(--background)] text-[var(--foreground)]`}>
       <aside className="group fixed inset-y-0 left-0 z-30 hidden w-20 overflow-hidden border-r border-[var(--border)] bg-[var(--surface-lowest)] px-3 py-5 transition-[width] duration-300 ease-out hover:w-60 focus-within:w-60 md:flex md:flex-col">
@@ -63,7 +89,7 @@ export function AppShell({ active, children, screenClassName }: { active: AppShe
           {navigationItems.map((item) => {
             const selected = item.id === active;
             return (
-              <Link aria-current={selected ? 'page' : undefined} className={`flex h-12 w-12 items-center rounded-lg px-[14px] text-[var(--muted-foreground)] transition-[width,background-color,color] duration-300 ease-out hover:w-full hover:bg-[var(--surface-low)] hover:text-[var(--foreground)] group-hover:w-full group-focus-within:w-full ${selected ? 'bg-[var(--nav-active)] text-[var(--foreground)] hover:bg-[var(--nav-active)]' : ''}`} href={item.href} key={item.id} title={item.label}>
+              <Link aria-current={selected ? 'page' : undefined} className={`flex h-12 w-12 items-center rounded-lg px-[14px] text-[var(--muted-foreground)] transition-[width,background-color,color] duration-300 ease-out hover:w-full hover:bg-[var(--surface-low)] hover:text-[var(--foreground)] group-hover:w-full group-focus-within:w-full ${selected ? 'bg-[var(--nav-active)] text-[var(--foreground)] hover:bg-[var(--nav-active)]' : ''}`} href={item.href} key={item.id} onClick={(event) => void navigate(event, item.href, selected)} title={item.label}>
                 <AppIcon name={item.icon} />
                 <span className="ml-4 whitespace-nowrap text-sm font-medium opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">{item.label}</span>
               </Link>
@@ -82,7 +108,7 @@ export function AppShell({ active, children, screenClassName }: { active: AppShe
         {navigationItems.map((item) => {
           const selected = item.id === active;
           return (
-            <Link aria-current={selected ? 'page' : undefined} className={`flex min-h-11 min-w-16 flex-col items-center justify-center gap-1 rounded-lg px-2 text-xs ${selected ? 'bg-[var(--nav-active)] font-medium text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}`} href={item.href} key={item.id}>
+            <Link aria-current={selected ? 'page' : undefined} className={`flex min-h-11 min-w-16 flex-col items-center justify-center gap-1 rounded-lg px-2 text-xs ${selected ? 'bg-[var(--nav-active)] font-medium text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}`} href={item.href} key={item.id} onClick={(event) => void navigate(event, item.href, selected)}>
               <AppIcon name={item.icon} />
               {item.id === 'new' ? 'Añadir' : item.label}
             </Link>
