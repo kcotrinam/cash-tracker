@@ -19,16 +19,16 @@ Route: `/login`
 
 Primary user task: Sign in using email and password.
 
-| State | Viewport | Reference | Status |
-| --- | --- | --- | --- |
-| Default | Mobile, 390px | `references/stitch/auth/login-default-mobile-390x844.png` | Approved |
-| Default | Desktop, 1440px | `references/stitch/auth/login-default-desktop-1440x900.png` | Approved |
-| Invalid credentials | Mobile, 390px | `references/stitch/auth/login-invalid-credentials-mobile-390x844.png` | Approved |
+| State               | Viewport        | Reference                                                               | Status   |
+| ------------------- | --------------- | ----------------------------------------------------------------------- | -------- |
+| Default             | Mobile, 390px   | `references/stitch/auth/login-default-mobile-390x844.png`               | Approved |
+| Default             | Desktop, 1440px | `references/stitch/auth/login-default-desktop-1440x900.png`             | Approved |
+| Invalid credentials | Mobile, 390px   | `references/stitch/auth/login-invalid-credentials-mobile-390x844.png`   | Approved |
 | Invalid credentials | Desktop, 1440px | `references/stitch/auth/login-invalid-credentials-desktop-1440x900.png` | Approved |
-| Submitting | Mobile, 390px | `references/stitch/auth/login-loading-mobile-390x844.png` | Approved |
-| Submitting | Desktop, 1440px | `references/stitch/auth/login-loading-desktop-1440x900.png` | Approved |
-| Expired session | Mobile, 390px | `references/stitch/auth/login-session-expired-mobile-390x844.png` | Approved |
-| Expired session | Desktop, 1440px | `references/stitch/auth/login-session-expired-desktop-1440x900.png` | Approved |
+| Submitting          | Mobile, 390px   | `references/stitch/auth/login-loading-mobile-390x844.png`               | Approved |
+| Submitting          | Desktop, 1440px | `references/stitch/auth/login-loading-desktop-1440x900.png`             | Approved |
+| Expired session     | Mobile, 390px   | `references/stitch/auth/login-session-expired-mobile-390x844.png`       | Approved |
+| Expired session     | Desktop, 1440px | `references/stitch/auth/login-session-expired-desktop-1440x900.png`     | Approved |
 
 #### Required behavior
 
@@ -79,16 +79,16 @@ Route: `/register`
 
 Primary user task: Create a CashTracker account using name, email and password.
 
-| State | Viewport | Reference | Status |
-| --- | --- | --- | --- |
-| Default | Mobile, 706px | `references/registration_mobile_default/screen.png` | Approved |
-| Default | Desktop, 1600px | `references/registration_desktop_default/screen.png` | Approved |
-| Validation error | Mobile, 654px | `references/registration_mobile_validation_error/screen.png` | Approved |
-| Validation error | Desktop, 1600px | `references/registration_desktop_validation_error/screen.png` | Approved |
-| Registration conflict | Mobile, 611px | `references/registration_mobile_conflict_state/screen.png` | Approved |
-| Registration conflict | Desktop | Not available | Draft |
-| Submitting | Mobile, 706px | `references/registration_mobile_submitting_state/screen.png` | Approved |
-| Submitting | Desktop | Not available | Draft |
+| State                 | Viewport        | Reference                                                     | Status   |
+| --------------------- | --------------- | ------------------------------------------------------------- | -------- |
+| Default               | Mobile, 706px   | `references/registration_mobile_default/screen.png`           | Approved |
+| Default               | Desktop, 1600px | `references/registration_desktop_default/screen.png`          | Approved |
+| Validation error      | Mobile, 654px   | `references/registration_mobile_validation_error/screen.png`  | Approved |
+| Validation error      | Desktop, 1600px | `references/registration_desktop_validation_error/screen.png` | Approved |
+| Registration conflict | Mobile, 611px   | `references/registration_mobile_conflict_state/screen.png`    | Approved |
+| Registration conflict | Desktop         | Not available                                                 | Draft    |
+| Submitting            | Mobile, 706px   | `references/registration_mobile_submitting_state/screen.png`  | Approved |
+| Submitting            | Desktop         | Not available                                                 | Draft    |
 
 #### Required fields
 
@@ -206,16 +206,16 @@ Mobile removes the promotional panel and product preview, keeps CashTracker iden
 
 Route: `/dashboard`
 
-| State | Viewport | Reference | Status |
-| --- | --- | --- | --- |
-| Populated | Mobile, 390px | `references/dashboard_mobile/screen.png` | Approved — implementation capture pending |
+| State     | Viewport        | Reference                                 | Status                                    |
+| --------- | --------------- | ----------------------------------------- | ----------------------------------------- |
+| Populated | Mobile, 390px   | `references/dashboard_mobile/screen.png`  | Approved — implementation capture pending |
 | Populated | Desktop, 1440px | `references/dashboard_desktop/screen.png` | Approved — implementation capture pending |
-| Empty | Mobile | Not available | Missing |
-| Empty | Desktop | Not available | Missing |
-| Loading | Mobile | Not available | Missing |
-| Loading | Desktop | Not available | Missing |
-| Error | Mobile | Not available | Missing |
-| Error | Desktop | Not available | Missing |
+| Empty     | Mobile          | Not available                             | Missing                                   |
+| Empty     | Desktop         | Not available                             | Missing                                   |
+| Loading   | Mobile          | Not available                             | Missing                                   |
+| Loading   | Desktop         | Not available                             | Missing                                   |
+| Error     | Mobile          | Not available                             | Missing                                   |
+| Error     | Desktop         | Not available                             | Missing                                   |
 
 #### Implementation notes
 
@@ -225,23 +225,29 @@ Route: `/dashboard`
 
 ## Remaining product screens
 
-| Route | Screen | Status |
-| --- | --- | --- |
-| `/transactions` | Transaction list | Approved — implementation capture pending |
-| `/transactions/new` | Add transaction | Approved — implementation capture pending |
-| `/recurring` | Recurring transactions | Missing |
-| `/categories` | Categories | Missing |
-| `/settings` | Settings | Missing |
+| Route               | Screen                 | Status                                    |
+| ------------------- | ---------------------- | ----------------------------------------- |
+| `/transactions`     | Transaction list       | Approved — implementation capture pending |
+| `/transactions/new` | Add transaction        | Approved — implementation capture pending |
+| `/recurring`        | Recurring transactions | Missing                                   |
+| `/categories`       | Categories             | Missing                                   |
+| `/settings`         | Settings               | Missing                                   |
 
 ## Implementation progress
 
-| Route | UI implemented | Responsive verified | Accessibility verified |
-| --- | --- | --- | --- |
-| `/login` | No | No | No |
-| `/register` | No | No | No |
-| `/dashboard` | Yes — typed mock boundary | Pending browser capture | Code review complete; browser audit pending |
-| `/transactions` | Yes — persisted API | Pending browser capture | Code review complete; browser audit pending |
-| `/transactions/new` | Yes — persisted API | Pending browser capture | Code review complete; browser audit pending |
-| `/recurring` | No | No | No |
-| `/categories` | No | No | No |
-| `/settings` | No | No | No |
+| Route               | UI implemented            | Responsive verified     | Accessibility verified                      |
+| ------------------- | ------------------------- | ----------------------- | ------------------------------------------- |
+| `/login`            | No                        | No                      | No                                          |
+| `/register`         | No                        | No                      | No                                          |
+| `/dashboard`        | Yes — typed mock boundary | Pending browser capture | Code review complete; browser audit pending |
+| `/transactions`     | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
+| `/transactions/new` | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
+| `/recurring`        | No                        | No                      | No                                          |
+| `/categories`       | No                        | No                      | No                                          |
+| `/settings`         | No                        | No                      | No                                          |
+
+### Category selector on `/transactions/new`
+
+- Categories are scoped to the signed-in user and filtered by the selected transaction type.
+- The inline selector supports accent-insensitive search and an explicit `Crear “…”` action.
+- Selecting `Otros gastos` or `Otros ingresos` has no special flow; both behave as regular categories.

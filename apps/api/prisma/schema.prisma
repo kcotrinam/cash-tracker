@@ -56,18 +56,21 @@ model UserSettings {
 }
 model Category {
   id String @id @default(uuid()) @db.Uuid
-  userId String? @db.Uuid
+  userId String @db.Uuid
   name String
+  normalizedName String
   type TransactionType
   color String?
   icon String?
+  isDefault Boolean @default(false)
   isActive Boolean @default(true)
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  user User? @relation(fields:[userId], references:[id], onDelete:Cascade)
+  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
   transactions Transaction[]
   recurringTransactions RecurringTransaction[]
   @@index([userId, type, isActive])
+  @@unique([userId, type, normalizedName])
 }
 model Transaction {
   id String @id @default(uuid()) @db.Uuid
