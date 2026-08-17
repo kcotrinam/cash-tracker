@@ -78,6 +78,7 @@ model Transaction {
   amount Decimal @db.Decimal(19,4)
   currencyCode CurrencyCode
   description String?
+  note String?
   occurredOn DateTime @db.Date
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)

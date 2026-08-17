@@ -64,9 +64,11 @@ function Icon({ name }: { name: string }) {
   );
 }
 function Shell({ children }: { children: React.ReactNode }) {
+  const availableItems = [
+    { href: '/transactions', icon: 'receipt', label: 'Movimientos' },
+    { href: '/transactions/new', icon: 'plus', label: 'Añadir movimiento' },
+  ];
   const unavailableItems = [
-    { icon: 'receipt', label: 'Movimientos' },
-    { icon: 'plus', label: 'Añadir movimiento' },
     { icon: 'repeat', label: 'Recurrentes' },
     { icon: 'settings', label: 'Configuración' },
   ];
@@ -94,6 +96,19 @@ function Shell({ children }: { children: React.ReactNode }) {
               Dashboard
             </span>
           </a>
+          {availableItems.map((item) => (
+            <a
+              className="flex h-12 w-12 items-center rounded-lg px-[14px] text-[var(--muted-foreground)] transition-[width,background-color,color] duration-300 ease-out hover:w-full hover:bg-[var(--surface-low)] hover:text-[var(--foreground)] group-focus-within:w-full"
+              href={item.href}
+              key={item.label}
+              title={item.label}
+            >
+              <Icon name={item.icon} />
+              <span className="ml-4 whitespace-nowrap text-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+                {item.label}
+              </span>
+            </a>
+          ))}
           {unavailableItems.map((item) => (
             <span
               aria-disabled="true"
@@ -121,6 +136,20 @@ function Shell({ children }: { children: React.ReactNode }) {
         >
           <Icon name="dashboard" />
           Dashboard
+        </a>
+        <a
+          className="flex min-h-11 min-w-16 flex-col items-center justify-center gap-1 px-2 text-xs text-[var(--muted-foreground)]"
+          href="/transactions"
+        >
+          <Icon name="receipt" />
+          Movimientos
+        </a>
+        <a
+          className="flex min-h-11 min-w-16 flex-col items-center justify-center gap-1 px-2 text-xs text-[var(--muted-foreground)]"
+          href="/transactions/new"
+        >
+          <Icon name="plus" />
+          Añadir
         </a>
         <span
           aria-disabled="true"

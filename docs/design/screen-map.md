@@ -227,8 +227,8 @@ Route: `/dashboard`
 
 | Route | Screen | Status |
 | --- | --- | --- |
-| `/transactions` | Transaction list | Missing |
-| `/transactions/new` | Add transaction | Missing |
+| `/transactions` | Transaction list | Approved — implementation capture pending |
+| `/transactions/new` | Add transaction | Approved — implementation capture pending |
 | `/recurring` | Recurring transactions | Missing |
 | `/categories` | Categories | Missing |
 | `/settings` | Settings | Missing |
@@ -240,7 +240,8 @@ Route: `/dashboard`
 | `/login` | No | No | No |
 | `/register` | No | No | No |
 | `/dashboard` | Yes — typed mock boundary | Pending browser capture | Code review complete; browser audit pending |
-| `/transactions` | No | No | No |
+| `/transactions` | Yes — persisted API | Pending browser capture | Code review complete; browser audit pending |
+| `/transactions/new` | Yes — persisted API | Pending browser capture | Code review complete; browser audit pending |
 | `/recurring` | No | No | No |
 | `/categories` | No | No | No |
 | `/settings` | No | No | No |
