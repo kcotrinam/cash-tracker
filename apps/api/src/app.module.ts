@@ -9,6 +9,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { RecurringTransactionsModule } from './recurring-transactions/recurring-transactions.module';
 import { SettingsModule } from './settings/settings.module';
 import { UsersModule } from './users/users.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UsersModule } from './users/users.module';
     RecurringTransactionsModule,
     SettingsModule,
     UsersModule,
+    DashboardModule,
   ],
 })
 export class AppModule {}

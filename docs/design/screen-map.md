@@ -219,34 +219,34 @@ Route: `/dashboard`
 
 #### Implementation notes
 
-- `/dashboard` uses a typed `DashboardDataSource` mock boundary; replace `dashboardMockDataSource` with the generated API client when that endpoint is available.
+- `/dashboard` reads authenticated, user-scoped data from `GET /dashboard`. Totals and category distribution are filtered by the selected month and currency; currencies are never combined.
+- If the selected period has no recorded transactions, the empty state says `Información no proporcionada aún`.
 - The implementation deliberately removes the Stitch placeholder actions, fabricated comparisons, broken navigation destinations, and floating action button. It uses accessible local month/currency controls, semantic tables/lists, readable mobile rows, and a text equivalent for the spending distribution.
-- Loading, empty, and error states are available in development through `?state=loading`, `?state=empty`, and `?state=error`. Visual capture and browser-based responsive/accessibility review remain pending because no browser was available during implementation.
+- Loading, empty, and error states are available in development through `?state=loading`, `?state=empty`, and `?state=error`. Visual capture and browser-based responsive/accessibility review remain pending.
 
 ## Remaining product screens
 
 | Route               | Screen                 | Status                                    |
 | ------------------- | ---------------------- | ----------------------------------------- |
-| `/transactions`     | Transaction list       | Approved — implementation capture pending |
-| `/transactions/new` | Add transaction        | Approved — implementation capture pending |
-| `/recurring`        | Recurring transactions | Approved — visual capture pending         |
-| `/recurring/new`    | New recurring rule     | Approved — visual capture pending         |
-| `/categories`       | Categories             | Missing                                   |
-| `/settings`         | Settings               | Missing                                   |
+| `/categories`       | Legacy category route  | Replaced by `/settings/categories`        |
 
 ## Implementation progress
 
 | Route               | UI implemented            | Responsive verified     | Accessibility verified                      |
 | ------------------- | ------------------------- | ----------------------- | ------------------------------------------- |
-| `/login`            | No                        | No                      | No                                          |
-| `/register`         | No                        | No                      | No                                          |
-| `/dashboard`        | Yes — typed mock boundary | Pending browser capture | Code review complete; browser audit pending |
+| `/login`            | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
+| `/register`         | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
+| `/dashboard`        | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
 | `/transactions`     | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
 | `/transactions/new` | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
 | `/recurring`        | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
 | `/recurring/new`    | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
 | `/categories`       | No                        | No                      | No                                          |
-| `/settings`         | No                        | No                      | No                                          |
+| `/settings`         | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
+| `/settings/profile` | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
+| `/settings/preferences` | Yes — persisted API   | Pending browser capture | Code review complete; browser audit pending |
+| `/settings/categories` | Yes — persisted API    | Pending browser capture | Code review complete; browser audit pending |
+| `/settings/security` | Yes — persisted API      | Pending browser capture | Code review complete; browser audit pending |
 
 ### Category selector on `/transactions/new`
 

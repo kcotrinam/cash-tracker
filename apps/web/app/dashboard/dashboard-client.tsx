@@ -2,13 +2,19 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { authenticatedFetch, getApiUrl } from '../authenticated-fetch';
 import { AppShell } from '../components/app-shell';
-import { dashboardMockDataSource } from './dashboard.mock';
 import { formatMoney, toCents } from './money';
 import type { CurrencyCode, DashboardData } from './dashboard.types';
 
 type ViewState = 'loading' | 'populated' | 'empty' | 'error';
-const months = ['2026-08', '2026-09', '2026-10', '2026-11'];
+const api = getApiUrl();
+const currentMonth = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' }).slice(0, 7);
+const months = Array.from({ length: 12 }, (_, index) => {
+  const date = new Date(`${currentMonth}-01T12:00:00`);
+  date.setMonth(date.getMonth() - index);
+  return date.toLocaleDateString('en-CA').slice(0, 7);
+});
 const statusLabel = {
   PENDING: 'Pendiente',
   RECORDED: 'Registrado',
@@ -19,7 +25,7 @@ function validCurrency(value: string | null): value is CurrencyCode {
   return value === 'PEN' || value === 'USD';
 }
 function validMonth(value: string | null): value is string {
-  return Boolean(value && /^2026-(08|09|10|11)$/.test(value));
+  return Boolean(value && /^\d{4}-(0[1-9]|1[0-2])$/.test(value));
 }
 function dateLabel(value: string) {
   return new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: 'short' })
@@ -285,7 +291,7 @@ function Notice({ kind, onRetry }: { kind: 'empty' | 'error'; onRetry: () => voi
       <h2 className="text-xl font-medium">
         {error
           ? 'No pudimos cargar tu resumen financiero.'
-          : 'Aún no tienes movimientos en este mes.'}
+          : 'Información no proporcionada aún.'}
       </h2>
       <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[var(--muted-foreground)]">
         {error
@@ -311,7 +317,7 @@ export function DashboardClient() {
   const params = useSearchParams();
   const monthParam = params.get('month');
   const currencyParam = params.get('currency');
-  const month = validMonth(monthParam) ? monthParam : '2026-10';
+  const month = validMonth(monthParam) ? monthParam : currentMonth;
   const currency: CurrencyCode = validCurrency(currencyParam) ? currencyParam : 'PEN';
   const fixture = process.env.NODE_ENV !== 'production' ? params.get('state') : null;
   const [state, setState] = useState<ViewState>(() =>
@@ -326,12 +332,17 @@ export function DashboardClient() {
       return () => {
         active = false;
       };
-    void dashboardMockDataSource
-      .getDashboard(request)
+    void authenticatedFetch(
+      `${api}/dashboard?month=${encodeURIComponent(request.month)}&currency=${request.currency}`,
+    )
+      .then((response) => {
+        if (!response.ok) throw new Error();
+        return response.json() as Promise<DashboardData>;
+      })
       .then((result) => {
         if (!active) return;
         setData(result);
-        setState(fixture === 'empty' || !result ? 'empty' : 'populated');
+        setState(fixture === 'empty' || result.recentTransactions.length === 0 ? 'empty' : 'populated');
       })
       .catch(() => active && setState('error'));
     return () => {
