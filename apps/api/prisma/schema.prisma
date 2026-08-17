@@ -16,6 +16,18 @@ enum CurrencyCode {
   USD
 }
 
+enum RecurrenceFrequency {
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum RecurringTransactionStatus {
+  ACTIVE
+  PAUSED
+  FINISHED
+}
+
 enum ThemePreference {
   SYSTEM
   LIGHT
@@ -23,91 +35,104 @@ enum ThemePreference {
 }
 
 model User {
-  id String @id @default(uuid()) @db.Uuid
-  email String @unique
-  passwordHash String
-  displayName String
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  settings UserSettings?
-  refreshSessions RefreshSession[]
-  categories Category[]
-  transactions Transaction[]
+  id                    String                 @id @default(uuid()) @db.Uuid
+  email                 String                 @unique
+  passwordHash          String
+  displayName           String
+  createdAt             DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime               @updatedAt @db.Timestamptz(6)
+  settings              UserSettings?
+  refreshSessions       RefreshSession[]
+  categories            Category[]
+  transactions          Transaction[]
   recurringTransactions RecurringTransaction[]
 }
+
 model RefreshSession {
-  id String @id @default(uuid()) @db.Uuid
-  userId String @db.Uuid
-  tokenHash String @unique
-  expiresAt DateTime @db.Timestamptz(6)
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique
+  expiresAt DateTime  @db.Timestamptz(6)
   revokedAt DateTime? @db.Timestamptz(6)
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, revokedAt, expiresAt])
 }
+
 model UserSettings {
-  userId String @id @db.Uuid
-  defaultCurrency CurrencyCode @default(PEN)
+  userId          String          @id @db.Uuid
+  defaultCurrency CurrencyCode    @default(PEN)
   themePreference ThemePreference @default(SYSTEM)
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+  createdAt       DateTime        @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime        @updatedAt @db.Timestamptz(6)
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
 model Category {
-  id String @id @default(uuid()) @db.Uuid
-  userId String @db.Uuid
-  name String
-  normalizedName String
-  type TransactionType
-  color String?
-  icon String?
-  isDefault Boolean @default(false)
-  isActive Boolean @default(true)
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
-  transactions Transaction[]
+  id                    String                 @id @default(uuid()) @db.Uuid
+  userId                String                 @db.Uuid
+  name                  String
+  normalizedName        String
+  type                  TransactionType
+  color                 String?
+  icon                  String?
+  isDefault             Boolean                @default(false)
+  isActive              Boolean                @default(true)
+  createdAt             DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime               @updatedAt @db.Timestamptz(6)
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions          Transaction[]
   recurringTransactions RecurringTransaction[]
-  @@index([userId, type, isActive])
+
   @@unique([userId, type, normalizedName])
+  @@index([userId, type, isActive])
 }
+
 model Transaction {
-  id String @id @default(uuid()) @db.Uuid
-  userId String @db.Uuid
-  categoryId String @db.Uuid
-  sourceRecurringTransactionId String? @db.Uuid
-  type TransactionType
-  amount Decimal @db.Decimal(19,4)
-  currencyCode CurrencyCode
-  description String?
-  note String?
-  occurredOn DateTime @db.Date
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
-  category Category @relation(fields:[categoryId], references:[id], onDelete:Restrict)
-  sourceRecurringTransaction RecurringTransaction? @relation("RecordedOccurrences", fields:[sourceRecurringTransactionId], references:[id], onDelete:SetNull)
+  id                     String                @id @default(uuid()) @db.Uuid
+  userId                 String                @db.Uuid
+  categoryId             String                @db.Uuid
+  recurringTransactionId String?               @db.Uuid
+  type                   TransactionType
+  amount                 Decimal               @db.Decimal(19, 4)
+  currencyCode           CurrencyCode
+  description            String?
+  note                   String?
+  occurredOn             DateTime              @db.Date
+  createdAt              DateTime              @default(now()) @db.Timestamptz(6)
+  updatedAt              DateTime              @updatedAt @db.Timestamptz(6)
+  user                   User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category               Category              @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  recurringTransaction   RecurringTransaction? @relation("RecordedOccurrences", fields: [recurringTransactionId], references: [id], onDelete: SetNull)
+
+  @@unique([recurringTransactionId, occurredOn])
   @@index([userId, occurredOn, type, currencyCode])
   @@index([categoryId])
 }
+
 model RecurringTransaction {
-  id String @id @default(uuid()) @db.Uuid
-  userId String @db.Uuid
-  categoryId String @db.Uuid
-  type TransactionType
-  name String
-  amount Decimal @db.Decimal(19,4)
-  currencyCode CurrencyCode
-  billingDay Int
-  startsOn DateTime @db.Date
-  endsOn DateTime? @db.Date
-  isActive Boolean @default(true)
-  notes String?
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
-  category Category @relation(fields:[categoryId], references:[id], onDelete:Restrict)
-  recordedTransactions Transaction[] @relation("RecordedOccurrences")
-  @@index([userId, type, isActive, billingDay])
+  id                   String                     @id @default(uuid()) @db.Uuid
+  userId               String                     @db.Uuid
+  categoryId           String                     @db.Uuid
+  type                 TransactionType
+  description          String
+  amount               Decimal                    @db.Decimal(19, 4)
+  currency             CurrencyCode
+  note                 String?
+  frequency            RecurrenceFrequency        @default(MONTHLY)
+  interval             Int                        @default(1)
+  startDate            DateTime                   @db.Date
+  endDate              DateTime?                  @db.Date
+  nextOccurrenceDate   DateTime                   @db.Date
+  anchorDay            Int?
+  status               RecurringTransactionStatus @default(ACTIVE)
+  createdAt            DateTime                   @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime                   @updatedAt @db.Timestamptz(6)
+  user                 User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category             Category                   @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  recordedTransactions Transaction[]              @relation("RecordedOccurrences")
+
+  @@index([userId, status, nextOccurrenceDate])
 }

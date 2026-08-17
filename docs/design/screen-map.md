@@ -229,7 +229,8 @@ Route: `/dashboard`
 | ------------------- | ---------------------- | ----------------------------------------- |
 | `/transactions`     | Transaction list       | Approved — implementation capture pending |
 | `/transactions/new` | Add transaction        | Approved — implementation capture pending |
-| `/recurring`        | Recurring transactions | Missing                                   |
+| `/recurring`        | Recurring transactions | Approved — visual capture pending         |
+| `/recurring/new`    | New recurring rule     | Approved — visual capture pending         |
 | `/categories`       | Categories             | Missing                                   |
 | `/settings`         | Settings               | Missing                                   |
 
@@ -242,7 +243,8 @@ Route: `/dashboard`
 | `/dashboard`        | Yes — typed mock boundary | Pending browser capture | Code review complete; browser audit pending |
 | `/transactions`     | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
 | `/transactions/new` | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
-| `/recurring`        | No                        | No                      | No                                          |
+| `/recurring`        | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
+| `/recurring/new`    | Yes — persisted API       | Pending browser capture | Code review complete; browser audit pending |
 | `/categories`       | No                        | No                      | No                                          |
 | `/settings`         | No                        | No                      | No                                          |
 

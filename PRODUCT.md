@@ -14,11 +14,11 @@ The product is Spanish-first and prepared for future internationalization. It su
 
 ## Intended capabilities
 
-Later phases will add authentication, PostgreSQL/Prisma data access, financial transactions, recurring income and expenses, and a dashboard. The REST API will expose an OpenAPI description.
+The application includes authentication, PostgreSQL/Prisma-backed categories and transactions, and recurring income and expense rules. A recurring rule is a schedule; it affects financial totals only after it creates a linked actual transaction. The REST API exposes OpenAPI documentation outside production.
 
 ## Constraints and future scope
 
-The current foundation does not include Prisma, authentication, financial domain logic, or the dashboard. S3 uploads, bank accounts, wallets, transfers, exchange rates, and automated recurring generation are future scope.
+S3 uploads, bank accounts, wallets, transfers, exchange rates, and a background scheduler are future scope. The recurrence processor is deliberately callable from a future worker; no automatic scheduler is introduced until the project has an established job runtime.
 
 ## Product principles
 

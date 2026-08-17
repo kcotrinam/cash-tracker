@@ -3,7 +3,11 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { MouseEvent, ReactNode } from 'react';
-import { authenticatedFetch, getApiUrl, SessionExpiredError } from '../authenticated-fetch';
+import {
+  authenticatedFetch,
+  getApiUrl,
+  SessionExpiredError,
+} from '../authenticated-fetch';
 
 export type AppIconName =
   | 'dashboard'
@@ -36,29 +40,53 @@ const iconPaths: Record<AppIconName, string> = {
 
 export function AppIcon({ name }: { name: AppIconName }) {
   return (
-    <svg aria-hidden="true" className="size-5 shrink-0 fill-none stroke-current" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8">
+    <svg
+      aria-hidden="true"
+      className="size-5 shrink-0 fill-none stroke-current"
+      viewBox="0 0 24 24"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.8"
+    >
       <path d={iconPaths[name]} />
     </svg>
   );
 }
 
-export type AppShellPage = 'dashboard' | 'transactions' | 'new';
+export type AppShellPage = 'dashboard' | 'transactions' | 'new' | 'recurring';
 
-const navigationItems: { href: string; icon: AppIconName; id: AppShellPage; label: string }[] = [
+const navigationItems: {
+  href: string;
+  icon: AppIconName;
+  id: AppShellPage;
+  label: string;
+}[] = [
   { href: '/dashboard', icon: 'dashboard', id: 'dashboard', label: 'Dashboard' },
   { href: '/transactions', icon: 'receipt', id: 'transactions', label: 'Movimientos' },
   { href: '/transactions/new', icon: 'plus', id: 'new', label: 'Añadir movimiento' },
+  { href: '/recurring', icon: 'repeat', id: 'recurring', label: 'Recurrentes' },
 ];
 
 const comingSoonItems: { icon: AppIconName; label: string }[] = [
-  { icon: 'repeat', label: 'Recurrentes' },
   { icon: 'settings', label: 'Configuración' },
 ];
 
-export function AppShell({ active, children, screenClassName }: { active: AppShellPage; children: ReactNode; screenClassName: string }) {
+export function AppShell({
+  active,
+  children,
+  screenClassName,
+}: {
+  active: AppShellPage;
+  children: ReactNode;
+  screenClassName: string;
+}) {
   const router = useRouter();
 
-  async function navigate(event: MouseEvent<HTMLAnchorElement>, href: string, selected: boolean) {
+  async function navigate(
+    event: MouseEvent<HTMLAnchorElement>,
+    href: string,
+    selected: boolean,
+  ) {
     if (
       selected ||
       event.button !== 0 ||
@@ -79,36 +107,67 @@ export function AppShell({ active, children, screenClassName }: { active: AppShe
   }
 
   return (
-    <div className={`${screenClassName} min-h-[100dvh] bg-[var(--background)] text-[var(--foreground)]`}>
+    <div
+      className={`${screenClassName} min-h-[100dvh] bg-[var(--background)] text-[var(--foreground)]`}
+    >
       <aside className="group fixed inset-y-0 left-0 z-30 hidden w-20 overflow-hidden border-r border-[var(--border)] bg-[var(--surface-lowest)] px-3 py-5 transition-[width] duration-300 ease-out hover:w-60 focus-within:w-60 md:flex md:flex-col">
         <Link className="flex h-12 min-w-[216px] items-center gap-4" href="/dashboard">
-          <span className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]"><AppIcon name="wallet" /></span>
-          <span className="whitespace-nowrap text-sm font-semibold tracking-[-0.02em] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">CashTracker</span>
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]">
+            <AppIcon name="wallet" />
+          </span>
+          <span className="whitespace-nowrap text-sm font-semibold tracking-[-0.02em] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+            CashTracker
+          </span>
         </Link>
         <nav aria-label="Navegación principal" className="mt-10 min-w-[216px] space-y-2">
           {navigationItems.map((item) => {
             const selected = item.id === active;
             return (
-              <Link aria-current={selected ? 'page' : undefined} className={`flex h-12 w-12 items-center rounded-lg px-[14px] text-[var(--muted-foreground)] transition-[width,background-color,color] duration-300 ease-out hover:w-full hover:bg-[var(--surface-low)] hover:text-[var(--foreground)] group-hover:w-full group-focus-within:w-full ${selected ? 'bg-[var(--nav-active)] text-[var(--foreground)] hover:bg-[var(--nav-active)]' : ''}`} href={item.href} key={item.id} onClick={(event) => void navigate(event, item.href, selected)} title={item.label}>
+              <Link
+                aria-current={selected ? 'page' : undefined}
+                className={`flex h-12 w-12 items-center rounded-lg px-[14px] text-[var(--muted-foreground)] transition-[width,background-color,color] duration-300 ease-out hover:w-full hover:bg-[var(--surface-low)] hover:text-[var(--foreground)] group-hover:w-full group-focus-within:w-full ${selected ? 'bg-[var(--nav-active)] text-[var(--foreground)] hover:bg-[var(--nav-active)]' : ''}`}
+                href={item.href}
+                key={item.id}
+                onClick={(event) => void navigate(event, item.href, selected)}
+                title={item.label}
+              >
                 <AppIcon name={item.icon} />
-                <span className="ml-4 whitespace-nowrap text-sm font-medium opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">{item.label}</span>
+                <span className="ml-4 whitespace-nowrap text-sm font-medium opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+                  {item.label}
+                </span>
               </Link>
             );
           })}
           {comingSoonItems.map((item) => (
-            <span aria-disabled="true" className="flex h-12 w-12 cursor-not-allowed items-center rounded-lg px-[14px] text-[var(--muted-foreground)] transition-[width,background-color,color] duration-300 ease-out group-hover:w-full group-hover:bg-[var(--surface-low)] group-hover:text-[var(--foreground)] group-focus-within:w-full" key={item.label} title={`${item.label}: próximamente`}>
+            <span
+              aria-disabled="true"
+              className="flex h-12 w-12 cursor-not-allowed items-center rounded-lg px-[14px] text-[var(--muted-foreground)] transition-[width,background-color,color] duration-300 ease-out group-hover:w-full group-hover:bg-[var(--surface-low)] group-hover:text-[var(--foreground)] group-focus-within:w-full"
+              key={item.label}
+              title={`${item.label}: próximamente`}
+            >
               <AppIcon name={item.icon} />
-              <span className="ml-4 whitespace-nowrap text-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">{item.label}</span>
+              <span className="ml-4 whitespace-nowrap text-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+                {item.label}
+              </span>
             </span>
           ))}
         </nav>
       </aside>
       <div className="pb-[84px] md:ml-20 md:pb-0">{children}</div>
-      <nav aria-label="Navegación principal" className="fixed inset-x-0 bottom-0 z-20 flex h-[76px] items-center justify-around border-t border-[var(--border)] bg-[var(--surface-lowest)] px-3 pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav
+        aria-label="Navegación principal"
+        className="fixed inset-x-0 bottom-0 z-20 flex h-[76px] items-center justify-around border-t border-[var(--border)] bg-[var(--surface-lowest)] px-3 pb-[env(safe-area-inset-bottom)] md:hidden"
+      >
         {navigationItems.map((item) => {
           const selected = item.id === active;
           return (
-            <Link aria-current={selected ? 'page' : undefined} className={`flex min-h-11 min-w-16 flex-col items-center justify-center gap-1 rounded-lg px-2 text-xs ${selected ? 'bg-[var(--nav-active)] font-medium text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}`} href={item.href} key={item.id} onClick={(event) => void navigate(event, item.href, selected)}>
+            <Link
+              aria-current={selected ? 'page' : undefined}
+              className={`flex min-h-11 min-w-16 flex-col items-center justify-center gap-1 rounded-lg px-2 text-xs ${selected ? 'bg-[var(--nav-active)] font-medium text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}`}
+              href={item.href}
+              key={item.id}
+              onClick={(event) => void navigate(event, item.href, selected)}
+            >
               <AppIcon name={item.icon} />
               {item.id === 'new' ? 'Añadir' : item.label}
             </Link>
