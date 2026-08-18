@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CurrencyCode, Prisma, TransactionType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateTransactionDto, ListTransactionsDto } from './transactions.dto';
+import { CreateTransactionDto, ListTransactionsDto, UpdateTransactionDto } from './transactions.dto';
 
 const categorySelect = {
   id: true,
@@ -116,5 +116,45 @@ export class TransactionsService {
         totalPages: Math.ceil(total / query.pageSize),
       },
     };
+  }
+
+  async update(userId: string, id: string, dto: UpdateTransactionDto) {
+    const current = await this.prisma.transaction.findFirst({ where: { id, userId } });
+    if (!current) throw new NotFoundException('El movimiento no existe.');
+    const amount = new Prisma.Decimal(dto.amount.replace(',', '.'));
+    if (!amount.isFinite() || amount.lte(0) || amount.decimalPlaces() > 4)
+      throw new BadRequestException(
+        'El monto debe ser mayor que cero y tener como máximo cuatro decimales.',
+      );
+    if (dto.categoryId !== current.categoryId || dto.type !== current.type) {
+      const category = await this.prisma.category.findUnique({
+        where: { id: dto.categoryId },
+        select: { userId: true, type: true, isActive: true },
+      });
+      if (!category) throw new NotFoundException('La categoría no existe.');
+      if (category.userId !== userId)
+        throw new ForbiddenException('No puedes usar esta categoría.');
+      if (!category.isActive || category.type !== dto.type)
+        throw new BadRequestException('La categoría no corresponde al tipo de movimiento.');
+    }
+    const transaction = await this.prisma.transaction.update({
+      where: { id },
+      data: {
+        type: dto.type,
+        amount,
+        currencyCode: dto.currencyCode,
+        description: dto.description,
+        categoryId: dto.categoryId,
+        occurredOn: dateOnly(dto.occurredOn),
+        note: dto.note || null,
+      },
+      include: { category: { select: categorySelect } },
+    });
+    return serialize(transaction);
+  }
+
+  async remove(userId: string, id: string) {
+    const result = await this.prisma.transaction.deleteMany({ where: { id, userId } });
+    if (result.count !== 1) throw new NotFoundException('El movimiento no existe.');
   }
 }

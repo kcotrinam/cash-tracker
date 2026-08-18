@@ -80,6 +80,7 @@
   --focus-ring: #dbe4df;
   --primary: #d7ded9;
   --primary-foreground: #172019;
+  --expense: #e3aaa2;
   --nav-active: #2e3a38;
   --destructive: #93000a;
   --destructive-foreground: #ffdad6;
@@ -131,6 +132,12 @@
 
 * {
   border-color: var(--border);
+}
+
+button:not(:disabled),
+[role='button'],
+select:not(:disabled) {
+  cursor: pointer;
 }
 
 html {

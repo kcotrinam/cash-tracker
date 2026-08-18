@@ -35,6 +35,8 @@ export class CreateTransactionDto {
   note?: string;
 }
 
+export class UpdateTransactionDto extends CreateTransactionDto {}
+
 export class ListTransactionsDto {
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) page = 1;
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(100) pageSize = 20;
