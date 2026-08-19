@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { FormEvent, useEffect, useId, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { authenticatedFetch } from '../authenticated-fetch';
+import { getDefaultCurrency } from '../default-currency';
 import { AppShell } from '../components/app-shell';
 
 const api = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
@@ -158,6 +159,7 @@ export function NewRecurring() {
     note: '',
     createFirstOccurrenceNow: false,
   });
+  useEffect(() => { void getDefaultCurrency().then((currency) => setForm((value) => ({ ...value, currency }))).catch(() => undefined); }, []);
   useEffect(() => {
     const controller = new AbortController();
     authenticatedFetch(

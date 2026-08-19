@@ -27,18 +27,18 @@ export class CreateRecurringTransactionDto {
   @Transform(compact)
   @IsString()
   @MaxLength(160)
-  @Matches(/\S/, { message: 'La descripción es obligatoria.' })
+  @Matches(/\S/, { message: 'Description is required.' })
   description!: string;
   @IsUUID() categoryId!: string;
   @IsString()
-  @Matches(/^\d+(?:[.,]\d+)?$/, { message: 'El monto debe ser un decimal válido.' })
+  @Matches(/^\d+(?:[.,]\d+)?$/, { message: 'Amount must be a valid decimal.' })
   amount!: string;
   @IsEnum(CurrencyCode) currency!: CurrencyCode;
   @IsEnum(RecurrenceFrequency) frequency!: RecurrenceFrequency;
   @Type(() => Number) @IsInt() @Min(1) @Max(1200) interval = 1;
-  @Matches(date, { message: 'La fecha de inicio no es válida.' }) startDate!: string;
+  @Matches(date, { message: 'The start date is invalid.' }) startDate!: string;
   @IsOptional()
-  @Matches(date, { message: 'La fecha de finalización no es válida.' })
+  @Matches(date, { message: 'The end date is invalid.' })
   endDate?: string;
   @IsOptional() @Transform(compact) @IsString() @MaxLength(1000) note?: string;
   @IsBoolean() createFirstOccurrenceNow = false;

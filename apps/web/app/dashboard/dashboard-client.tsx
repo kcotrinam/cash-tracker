@@ -1,8 +1,10 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { authenticatedFetch, getApiUrl } from '../authenticated-fetch';
+import { getDefaultCurrency } from '../default-currency';
 import { AppShell } from '../components/app-shell';
 import { formatMoney, toCents } from './money';
 import type { CurrencyCode, DashboardData } from './dashboard.types';
@@ -16,9 +18,9 @@ const months = Array.from({ length: 12 }, (_, index) => {
   return date.toLocaleDateString('en-CA').slice(0, 7);
 });
 const statusLabel = {
-  PENDING: 'Pendiente',
-  RECORDED: 'Registrado',
-  INACTIVE: 'Inactivo',
+  PENDING: 'Pending',
+  RECORDED: 'Recorded',
+  INACTIVE: 'Inactive',
 } as const;
 
 function validCurrency(value: string | null): value is CurrencyCode {
@@ -28,12 +30,12 @@ function validMonth(value: string | null): value is string {
   return Boolean(value && /^\d{4}-(0[1-9]|1[0-2])$/.test(value));
 }
 function dateLabel(value: string) {
-  return new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: 'short' })
+  return new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short' })
     .format(new Date(`${value}T12:00:00`))
     .replace('.', '');
 }
 function monthLabel(value: string) {
-  return new Intl.DateTimeFormat('es-PE', { month: 'long', year: 'numeric' })
+  return new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' })
     .format(new Date(`${value}-01T12:00:00`))
     .replace(/^./, (letter) => letter.toUpperCase());
 }
@@ -77,24 +79,24 @@ function Summary({ data }: { data: DashboardData }) {
       className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.55fr_1fr_1fr]"
     >
       <h2 id="summary-heading" className="sr-only">
-        Resumen mensual
+        Monthly summary
       </h2>
       <article className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:col-span-2 lg:col-span-1">
         <p className="text-sm font-medium text-[var(--muted-foreground)]">
-          Saldo del mes
+          Monthly balance
         </p>
         <p className="mt-4 font-[family-name:var(--font-geist)] text-4xl font-semibold tracking-[-0.035em] tabular-nums sm:text-5xl">
           {formatMoney(data.summary.netBalance, data.currency)}
         </p>
       </article>
       <article className="rounded-xl border border-[var(--border)] bg-[var(--surface-low)] p-5">
-        <p className="text-sm font-medium text-[var(--muted-foreground)]">Ingresos</p>
+        <p className="text-sm font-medium text-[var(--muted-foreground)]">Income</p>
         <p className="mt-5 text-2xl font-medium tabular-nums text-[var(--income)]">
           {formatMoney(data.summary.income, data.currency, true)}
         </p>
       </article>
       <article className="rounded-xl border border-[var(--border)] bg-[var(--surface-low)] p-5">
-        <p className="text-sm font-medium text-[var(--muted-foreground)]">Gastos</p>
+        <p className="text-sm font-medium text-[var(--muted-foreground)]">Expenses</p>
         <p className="mt-5 text-2xl font-medium tabular-nums text-[var(--expense)]">
           {formatMoney(data.summary.expenses, data.currency, true).replace('+', '−')}
         </p>
@@ -117,18 +119,18 @@ function Spending({ data }: { data: DashboardData }) {
     >
       <div className="mb-6 flex items-baseline justify-between gap-4">
         <h2 id="spending-heading" className="text-lg font-medium tracking-[-0.02em]">
-          Distribución de gastos
+          Spending by category
         </h2>
         <span className="text-sm text-[var(--muted-foreground)]">
           {formatMoney(data.summary.expenses, data.currency)}
         </span>
       </div>
       <p className="sr-only">
-        Gastos por categoría:{' '}
+        Spending by category:{' '}
         {items
           .map(
             (item) =>
-              `${item.categoryName}, ${formatMoney(item.amount, data.currency)}, ${item.percentage} por ciento`,
+              `${item.categoryName}, ${formatMoney(item.amount, data.currency)}, ${item.percentage} percent`,
           )
           .join('; ')}
         .
@@ -164,10 +166,10 @@ function Recurring({ data }: { data: DashboardData }) {
       className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6"
     >
       <h2 id="recurring-heading" className="text-lg font-medium tracking-[-0.02em]">
-        Recurrentes del mes
+        Recurring this month
       </h2>
       <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-        No se incluyen en los totales hasta registrarse.
+        They are not included in totals until recorded.
       </p>
       <ul className="mt-5 divide-y divide-[var(--border)]">
         {data.recurringItems.map((item) => (
@@ -176,10 +178,10 @@ function Recurring({ data }: { data: DashboardData }) {
               <div>
                 <p className="font-medium">{item.name}</p>
                 <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-                  Programado: {dateLabel(item.scheduledOn)} ·{' '}
+                  Scheduled: {dateLabel(item.scheduledOn)} ·{' '}
                   {item.recordedTransactionId
-                    ? 'Movimiento registrado'
-                    : 'Sin movimiento registrado'}
+                    ? 'Transaction recorded'
+                    : 'No transaction recorded'}
                 </p>
               </div>
               <p
@@ -205,20 +207,20 @@ function Transactions({ data }: { data: DashboardData }) {
     >
       <div className="flex items-center justify-between p-5 sm:p-6">
         <h2 id="transactions-heading" className="text-lg font-medium tracking-[-0.02em]">
-          Movimientos recientes
+          Recent transactions
         </h2>
         <span className="text-sm text-[var(--muted-foreground)]">
-          {data.recentTransactions.length} movimientos
+          {data.recentTransactions.length} transactions
         </span>
       </div>
       <div className="hidden overflow-x-auto md:block">
         <table className="w-full text-left">
           <thead className="border-y border-[var(--border)] text-sm text-[var(--muted-foreground)]">
             <tr>
-              <th className="px-6 py-3 font-medium">Fecha</th>
-              <th className="px-6 py-3 font-medium">Descripción</th>
-              <th className="px-6 py-3 font-medium">Categoría</th>
-              <th className="px-6 py-3 text-right font-medium">Importe</th>
+              <th className="px-6 py-3 font-medium">Date</th>
+              <th className="px-6 py-3 font-medium">Description</th>
+              <th className="px-6 py-3 font-medium">Category</th>
+              <th className="px-6 py-3 text-right font-medium">Amount</th>
             </tr>
           </thead>
           <tbody>
@@ -271,7 +273,7 @@ function Transactions({ data }: { data: DashboardData }) {
 function Loading() {
   return (
     <div aria-busy="true" aria-live="polite" className="animate-pulse space-y-6">
-      <p className="sr-only">Cargando resumen financiero.</p>
+      <p className="sr-only">Loading financial summary.</p>
       <div className="h-40 rounded-xl bg-[var(--surface)]" />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="h-80 rounded-xl bg-[var(--surface)] lg:col-span-2" />
@@ -290,13 +292,13 @@ function Notice({ kind, onRetry }: { kind: 'empty' | 'error'; onRetry: () => voi
     >
       <h2 className="text-xl font-medium">
         {error
-          ? 'No pudimos cargar tu resumen financiero.'
-          : 'Información no proporcionada aún.'}
+          ? 'We could not load your financial summary.'
+          : 'Information has not been provided yet.'}
       </h2>
       <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[var(--muted-foreground)]">
         {error
-          ? 'Revisa tu conexión e inténtalo nuevamente.'
-          : 'Cuando registres movimientos, aquí verás el resumen de este período.'}
+          ? 'Check your connection and try again.'
+          : 'Once you record transactions, this period’s summary will appear here.'}
       </p>
       {error && (
         <button
@@ -326,6 +328,16 @@ export function DashboardClient() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [retry, setRetry] = useState(0);
   const request = useMemo(() => ({ month, currency }), [month, currency]);
+  useEffect(() => {
+    if (currencyParam) return;
+    void getDefaultCurrency().then((preferredCurrency) => {
+      if (preferredCurrency !== currency) {
+        const next = new URLSearchParams(params.toString());
+        next.set('currency', preferredCurrency);
+        router.replace(`${pathname}?${next.toString()}`, { scroll: false });
+      }
+    }).catch(() => undefined);
+  }, [currency, currencyParam, params, pathname, router]);
   useEffect(() => {
     let active = true;
     if (fixture === 'loading' || (fixture === 'error' && retry === 0))
@@ -364,12 +376,14 @@ export function DashboardClient() {
               <Icon name="menu" />
             </span>
             <h1 className="text-xl font-semibold tracking-[-0.03em] sm:text-2xl">
-              CashTracker
+              <Link className="rounded-sm hover:text-[var(--primary)]" href="/dashboard">
+                CashTracker
+              </Link>
             </h1>
           </div>
           <div className="flex items-center gap-2">
             <label className="sr-only" htmlFor="dashboard-month">
-              Mes
+              Month
             </label>
             <select
               className="h-11 max-w-40 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--foreground)]"
@@ -384,7 +398,7 @@ export function DashboardClient() {
               ))}
             </select>
             <label className="sr-only" htmlFor="dashboard-currency">
-              Moneda
+              Currency
             </label>
             <select
               className="h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-medium text-[var(--foreground)]"

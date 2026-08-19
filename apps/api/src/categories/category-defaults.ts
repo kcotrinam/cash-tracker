@@ -1,28 +1,43 @@
-import { TransactionType } from '@prisma/client';
+import { AppLanguage, TransactionType } from '@prisma/client';
+import { normalizeCategoryName } from './category-normalization';
 
-export const defaultCategories = [
-  { name: 'Salario', normalizedName: 'salario', type: TransactionType.INCOME },
-  { name: 'Freelance', normalizedName: 'freelance', type: TransactionType.INCOME },
+type DefaultCategory = {
+  key: string;
+  type: TransactionType;
+  isFallback?: boolean;
+  names: Record<AppLanguage, string>;
+};
+
+const definitions: readonly DefaultCategory[] = [
+  { key: 'salary', type: TransactionType.INCOME, names: { EN: 'Salary', ES: 'Salario' } },
+  { key: 'freelance', type: TransactionType.INCOME, names: { EN: 'Freelance', ES: 'Freelance' } },
   {
-    name: 'Otros ingresos',
-    normalizedName: 'otros ingresos',
+    key: 'other-income',
     type: TransactionType.INCOME,
     isFallback: true,
+    names: { EN: 'Other income', ES: 'Otros ingresos' },
   },
-  { name: 'Vivienda', normalizedName: 'vivienda', type: TransactionType.EXPENSE },
-  { name: 'Alimentación', normalizedName: 'alimentacion', type: TransactionType.EXPENSE },
-  { name: 'Transporte', normalizedName: 'transporte', type: TransactionType.EXPENSE },
-  { name: 'Servicios', normalizedName: 'servicios', type: TransactionType.EXPENSE },
-  { name: 'Salud', normalizedName: 'salud', type: TransactionType.EXPENSE },
+  { key: 'housing', type: TransactionType.EXPENSE, names: { EN: 'Housing', ES: 'Vivienda' } },
+  { key: 'food', type: TransactionType.EXPENSE, names: { EN: 'Food', ES: 'Alimentación' } },
+  { key: 'transport', type: TransactionType.EXPENSE, names: { EN: 'Transport', ES: 'Transporte' } },
+  { key: 'utilities', type: TransactionType.EXPENSE, names: { EN: 'Utilities', ES: 'Servicios' } },
+  { key: 'health', type: TransactionType.EXPENSE, names: { EN: 'Health', ES: 'Salud' } },
   {
-    name: 'Entretenimiento',
-    normalizedName: 'entretenimiento',
+    key: 'entertainment',
     type: TransactionType.EXPENSE,
+    names: { EN: 'Entertainment', ES: 'Entretenimiento' },
   },
   {
-    name: 'Otros gastos',
-    normalizedName: 'otros gastos',
+    key: 'other-expenses',
     type: TransactionType.EXPENSE,
     isFallback: true,
+    names: { EN: 'Other expenses', ES: 'Otros gastos' },
   },
-] as const;
+];
+
+export function defaultCategories(language: AppLanguage) {
+  return definitions.map(({ key, type, isFallback, names }) => {
+    const name = names[language];
+    return { defaultKey: key, name, normalizedName: normalizeCategoryName(name), type, isFallback };
+  });
+}

@@ -10,14 +10,14 @@ const geist = localFont({
 
 export const metadata: Metadata = {
   title: 'CashTracker',
-  description: 'Claridad financiera sin ruido.',
+  description: 'Financial clarity without the noise.',
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es">
+    <html lang="en">
       <body className={geist.variable}>{children}</body>
     </html>
   );

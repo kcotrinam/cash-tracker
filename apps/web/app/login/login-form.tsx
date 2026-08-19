@@ -86,9 +86,9 @@ export function LoginForm() {
   }, [router, searchParams]);
 
   const alertMessage = {
-    error: 'El correo o la contraseña son incorrectos.',
-    'session-expired': 'Tu sesión expiró. Inicia sesión nuevamente.',
-    network: 'No pudimos conectarnos. Inténtalo nuevamente.',
+    error: 'The email or password is incorrect.',
+    'session-expired': 'Your session expired. Please sign in again.',
+    network: 'We could not connect. Please try again.',
   } as const;
 
   function clearError() {
@@ -162,9 +162,9 @@ export function LoginForm() {
       )}
 
       <header className="mb-9">
-        <h1 className="text-2xl font-medium tracking-[-0.02em]">Bienvenido de nuevo</h1>
+        <h1 className="text-2xl font-medium tracking-[-0.02em]">Welcome back</h1>
         <p className="mt-2 text-base leading-6 text-[var(--muted-foreground)]">
-          Inicia sesión para continuar con tus finanzas.
+          Sign in to continue managing your finances.
         </p>
       </header>
 
@@ -175,7 +175,7 @@ export function LoginForm() {
               className="mb-2 block text-[13px] font-medium tracking-[0.02em] text-[var(--muted-foreground)]"
               htmlFor={emailId}
             >
-              Correo electrónico
+              Email address
             </label>
             <input
               aria-describedby={
@@ -196,7 +196,7 @@ export function LoginForm() {
                 setFieldError(null);
                 clearError();
               }}
-              placeholder="nombre@ejemplo.com"
+              placeholder="name@example.com"
               ref={emailRef}
               required
               type="email"
@@ -207,7 +207,7 @@ export function LoginForm() {
                 className="mt-2 text-sm text-[var(--destructive-foreground)]"
                 id={`${emailId}-error`}
               >
-                Ingresa un correo electrónico válido.
+                Enter a valid email address.
               </p>
             )}
           </div>
@@ -217,7 +217,7 @@ export function LoginForm() {
               className="mb-2 block text-[13px] font-medium tracking-[0.02em] text-[var(--muted-foreground)]"
               htmlFor={passwordId}
             >
-              Contraseña
+              Password
             </label>
             <div className="relative">
               <input
@@ -243,7 +243,7 @@ export function LoginForm() {
                 value={password}
               />
               <button
-                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
                 className="absolute right-0 top-0 flex size-12 items-center justify-center rounded-r-lg text-[var(--muted-foreground)] transition-colors hover:text-[var(--foreground)]"
                 onClick={() => setShowPassword((visible) => !visible)}
                 type="button"
@@ -259,7 +259,7 @@ export function LoginForm() {
                 role={alert === 'error' ? 'alert' : undefined}
                 tabIndex={alert === 'error' ? -1 : undefined}
               >
-                {alert === 'error' ? alertMessage.error : 'Ingresa tu contraseña.'}
+                {alert === 'error' ? alertMessage.error : 'Enter your password.'}
               </p>
             )}
           </div>
@@ -276,16 +276,16 @@ export function LoginForm() {
               className="size-4 animate-spin rounded-full border-2 border-[var(--primary-foreground)] border-r-transparent"
             />
           )}
-          {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+          {loading ? 'Signing in...' : 'Sign in'}
         </button>
 
         <p className="mt-7 text-center text-[13px] leading-5 text-[var(--muted-foreground)]">
-          ¿Aún no tienes una cuenta?{' '}
+          Don&apos;t have an account?{' '}
           <Link
             className="font-medium text-[var(--foreground)] underline decoration-[var(--border)] underline-offset-4 transition-colors hover:decoration-current"
             href="/register"
           >
-            Crear cuenta
+            Create account
           </Link>
         </p>
       </form>

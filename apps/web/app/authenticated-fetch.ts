@@ -2,7 +2,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 export class SessionExpiredError extends Error {
   constructor() {
-    super('La sesión expiró.');
+    super('Your session has expired.');
     this.name = 'SessionExpiredError';
   }
 }

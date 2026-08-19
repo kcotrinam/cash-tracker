@@ -65,17 +65,17 @@ export class RecurringTransactionsService {
       where: { id: categoryId },
       select: { userId: true, type: true, isActive: true },
     });
-    if (!category) throw new NotFoundException('La categoría no existe.');
+    if (!category) throw new NotFoundException('The category does not exist.');
     if (category.userId !== userId)
-      throw new ForbiddenException('No puedes usar esta categoría.');
+      throw new ForbiddenException('You cannot use this category.');
     if (!category.isActive || category.type !== type)
-      throw new BadRequestException('La categoría no corresponde al tipo de movimiento.');
+      throw new BadRequestException('The category does not match the transaction type.');
   }
   private amount(raw: string) {
     const amount = new Prisma.Decimal(raw.replace(',', '.'));
     if (!amount.isFinite() || amount.lte(0) || amount.decimalPlaces() > 4)
       throw new BadRequestException(
-        'El monto debe ser mayor que cero y tener como máximo cuatro decimales.',
+        'Amount must be greater than zero and have at most four decimal places.',
       );
     return amount;
   }
@@ -84,11 +84,11 @@ export class RecurringTransactionsService {
     const endDate = dto.endDate ? parseDateOnly(dto.endDate) : null;
     if (endDate && endDate < startDate)
       throw new BadRequestException(
-        'La fecha de finalización no puede ser anterior a la fecha de inicio.',
+        'The end date cannot be earlier than the start date.',
       );
     if (dto.createFirstOccurrenceNow && startDate > this.today())
       throw new BadRequestException(
-        'La primera ocurrencia solo se puede registrar si la fecha de inicio es hoy o anterior.',
+        'The first occurrence can only be recorded when the start date is today or earlier.',
       );
     const amount = this.amount(dto.amount);
     return this.prisma.$transaction(async (db) => {
@@ -179,14 +179,14 @@ export class RecurringTransactionsService {
       where: { id, userId },
       include,
     });
-    if (!row) throw new NotFoundException('La recurrencia no existe.');
+    if (!row) throw new NotFoundException('The recurring item does not exist.');
     return serialize(row);
   }
   async update(userId: string, id: string, dto: UpdateRecurringTransactionDto) {
     const current = await this.prisma.recurringTransaction.findFirst({
       where: { id, userId },
     });
-    if (!current) throw new NotFoundException('La recurrencia no existe.');
+    if (!current) throw new NotFoundException('The recurring item does not exist.');
     const type = dto.type ?? current.type;
     const categoryId = dto.categoryId ?? current.categoryId;
     if (dto.categoryId || dto.type) await this.validCategory(userId, categoryId, type);
@@ -199,7 +199,7 @@ export class RecurringTransactionsService {
           : current.endDate;
     if (endDate && endDate < startDate)
       throw new BadRequestException(
-        'La fecha de finalización no puede ser anterior a la fecha de inicio.',
+        'The end date cannot be earlier than the start date.',
       );
     const frequency = dto.frequency ?? current.frequency;
     const interval = dto.interval ?? current.interval;
@@ -240,7 +240,7 @@ export class RecurringTransactionsService {
     const current = await this.prisma.recurringTransaction.findFirst({
       where: { id, userId },
     });
-    if (!current) throw new NotFoundException('La recurrencia no existe.');
+    if (!current) throw new NotFoundException('The recurring item does not exist.');
     let nextOccurrenceDate = current.nextOccurrenceDate;
     if (dto.status === RecurringTransactionStatus.ACTIVE)
       nextOccurrenceDate = firstScheduledOnOrAfter(

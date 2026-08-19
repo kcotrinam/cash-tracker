@@ -25,7 +25,7 @@ export class AuthService {
     id: string;
     email: string;
     displayName: string;
-    settings: { defaultCurrency: string; timezone: string; themePreference: string } | null;
+    settings: { defaultCurrency: string; timezone: string; themePreference: string; language: string } | null;
   }) {
     return {
       id: user.id,
@@ -65,13 +65,13 @@ export class AuthService {
           },
           include: { settings: true },
         });
-        await this.categories.provisionDefaults(created.id, db);
+        await this.categories.provisionDefaults(created.id, created.settings?.language, db);
         return created;
       });
       return { user: this.safe(user), ...(await this.tokens(user.id)) };
     } catch (error) {
       if ((error as { code?: string }).code === 'P2002')
-        throw new ConflictException('No se pudo crear la cuenta.');
+        throw new ConflictException('We could not create the account.');
       throw error;
     }
   }
@@ -81,7 +81,7 @@ export class AuthService {
       include: { settings: true },
     });
     if (!user || !(await argon2.verify(user.passwordHash, dto.password)))
-      throw new UnauthorizedException('Credenciales inválidas.');
+      throw new UnauthorizedException('Invalid credentials.');
     return { user: this.safe(user), ...(await this.tokens(user.id)) };
   }
   async me(id: string) {
@@ -97,7 +97,7 @@ export class AuthService {
     const existing = await this.prisma.refreshSession.findFirst({
       where: { tokenHash: hash, revokedAt: null, expiresAt: { gt: new Date() } },
     });
-    if (!existing) throw new UnauthorizedException('Sesión inválida.');
+    if (!existing) throw new UnauthorizedException('Invalid session.');
     const newRefresh = randomBytes(48).toString('base64url');
     const expiresAt = new Date(
       Date.now() + this.config.getOrThrow<number>('refreshTokenTtlDays') * 86400000,
@@ -106,7 +106,7 @@ export class AuthService {
       where: { id: existing.id, tokenHash: hash, revokedAt: null },
       data: { tokenHash: this.hashToken(newRefresh), expiresAt },
     });
-    if (result.count !== 1) throw new UnauthorizedException('Sesión inválida.');
+    if (result.count !== 1) throw new UnauthorizedException('Invalid session.');
     return {
       accessToken: await this.jwt.signAsync({ sub: existing.userId }),
       refreshToken: newRefresh,
@@ -122,12 +122,12 @@ export class AuthService {
   }
   async changePassword(userId: string, dto: ChangePasswordDto) {
     if (dto.newPassword !== dto.confirmPassword)
-      throw new ConflictException('Las contraseñas nuevas no coinciden.');
+      throw new ConflictException('The new passwords do not match.');
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user || !(await argon2.verify(user.passwordHash, dto.currentPassword)))
-      throw new UnauthorizedException('La contraseña actual es incorrecta.');
+      throw new UnauthorizedException('The current password is incorrect.');
     if (await argon2.verify(user.passwordHash, dto.newPassword))
-      throw new ConflictException('La nueva contraseña debe ser diferente a la actual.');
+      throw new ConflictException('The new password must be different from the current password.');
     const passwordHash = await argon2.hash(dto.newPassword, { type: argon2.argon2id });
     await this.prisma.$transaction([
       this.prisma.user.update({ where: { id: userId }, data: { passwordHash } }),

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { FormEvent, useEffect, useId, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { authenticatedFetch } from '../authenticated-fetch';
+import { getDefaultCurrency } from '../default-currency';
 import { AppShell } from '../components/app-shell';
 
 const api = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
@@ -157,6 +158,7 @@ export function NewTransaction() {
   const [saving, setSaving] = useState(false);
   const [categoryQuery, setCategoryQuery] = useState('');
   const [creatingCategory, setCreatingCategory] = useState(false);
+  useEffect(() => { void getDefaultCurrency().then((currencyCode) => setForm((value) => ({ ...value, currencyCode }))).catch(() => undefined); }, []);
   useEffect(() => {
     const controller = new AbortController();
     const search = categoryQuery.trim()

@@ -64,7 +64,7 @@ export class DashboardService {
         const value = row._sum.amount ?? new Prisma.Decimal(0);
         return {
           categoryId: row.categoryId,
-          categoryName: category?.name ?? 'Sin categoría',
+          categoryName: category?.name ?? 'Uncategorized',
           ...(category?.color ? { color: category.color } : {}),
           amount: amount(value),
           percentage: expenses.isZero() ? '0' : value.dividedBy(expenses).times(100).toDecimalPlaces(2).toFixed(),
@@ -72,7 +72,7 @@ export class DashboardService {
       }),
       recentTransactions: transactions.map((transaction) => ({
         id: transaction.id,
-        description: transaction.description ?? 'Sin descripción',
+        description: transaction.description ?? 'No description',
         occurredOn: dateOnlyString(transaction.occurredOn),
         type: transaction.type,
         amount: amount(transaction.amount),

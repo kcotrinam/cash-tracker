@@ -15,7 +15,7 @@ import { CurrencyCode, TransactionType } from '@prisma/client';
 export class CreateTransactionDto {
   @IsEnum(TransactionType) type!: TransactionType;
   @IsString()
-  @Matches(/^\d+(?:[.,]\d+)?$/, { message: 'El monto debe ser un decimal válido.' })
+  @Matches(/^\d+(?:[.,]\d+)?$/, { message: 'Amount must be a valid decimal.' })
   amount!: string;
   @IsEnum(CurrencyCode) currencyCode!: CurrencyCode;
   @Transform(({ value }) =>
@@ -23,10 +23,10 @@ export class CreateTransactionDto {
   )
   @IsString()
   @MaxLength(160)
-  @Matches(/\S/, { message: 'La descripción es obligatoria.' })
+  @Matches(/\S/, { message: 'Description is required.' })
   description!: string;
   @IsUUID() categoryId!: string;
-  @Matches(/^\d{4}-\d{2}-\d{2}$/, { message: 'La fecha no es válida.' })
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, { message: 'The date is invalid.' })
   occurredOn!: string;
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))

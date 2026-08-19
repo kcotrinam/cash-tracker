@@ -5,7 +5,7 @@ import { RecurrenceFrequency } from '@prisma/client';
 export function parseDateOnly(value: string) {
   const date = new Date(`${value}T12:00:00.000Z`);
   if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value)
-    throw new BadRequestException('La fecha no es válida.');
+    throw new BadRequestException('The date is invalid.');
   return date;
 }
 

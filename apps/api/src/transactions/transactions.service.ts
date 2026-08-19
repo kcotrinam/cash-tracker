@@ -18,7 +18,7 @@ const categorySelect = {
 function dateOnly(value: string) {
   const date = new Date(`${value}T12:00:00.000Z`);
   if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value)
-    throw new BadRequestException('La fecha no es válida.');
+    throw new BadRequestException('The date is invalid.');
   return date;
 }
 function serialize(transaction: {
@@ -53,17 +53,17 @@ export class TransactionsService {
     const amount = new Prisma.Decimal(dto.amount.replace(',', '.'));
     if (!amount.isFinite() || amount.lte(0) || amount.decimalPlaces() > 4)
       throw new BadRequestException(
-        'El monto debe ser mayor que cero y tener como máximo cuatro decimales.',
+        'Amount must be greater than zero and have at most four decimal places.',
       );
     const category = await this.prisma.category.findUnique({
       where: { id: dto.categoryId },
       select: { userId: true, type: true, isActive: true },
     });
-    if (!category) throw new NotFoundException('La categoría no existe.');
+    if (!category) throw new NotFoundException('The category does not exist.');
     if (category.userId !== userId)
-      throw new ForbiddenException('No puedes usar esta categoría.');
+      throw new ForbiddenException('You cannot use this category.');
     if (!category.isActive || category.type !== dto.type)
-      throw new BadRequestException('La categoría no corresponde al tipo de movimiento.');
+      throw new BadRequestException('The category does not match the transaction type.');
     const transaction = await this.prisma.transaction.create({
       data: {
         userId,
@@ -120,22 +120,22 @@ export class TransactionsService {
 
   async update(userId: string, id: string, dto: UpdateTransactionDto) {
     const current = await this.prisma.transaction.findFirst({ where: { id, userId } });
-    if (!current) throw new NotFoundException('El movimiento no existe.');
+    if (!current) throw new NotFoundException('The transaction does not exist.');
     const amount = new Prisma.Decimal(dto.amount.replace(',', '.'));
     if (!amount.isFinite() || amount.lte(0) || amount.decimalPlaces() > 4)
       throw new BadRequestException(
-        'El monto debe ser mayor que cero y tener como máximo cuatro decimales.',
+        'Amount must be greater than zero and have at most four decimal places.',
       );
     if (dto.categoryId !== current.categoryId || dto.type !== current.type) {
       const category = await this.prisma.category.findUnique({
         where: { id: dto.categoryId },
         select: { userId: true, type: true, isActive: true },
       });
-      if (!category) throw new NotFoundException('La categoría no existe.');
+      if (!category) throw new NotFoundException('The category does not exist.');
       if (category.userId !== userId)
-        throw new ForbiddenException('No puedes usar esta categoría.');
+        throw new ForbiddenException('You cannot use this category.');
       if (!category.isActive || category.type !== dto.type)
-        throw new BadRequestException('La categoría no corresponde al tipo de movimiento.');
+        throw new BadRequestException('The category does not match the transaction type.');
     }
     const transaction = await this.prisma.transaction.update({
       where: { id },
@@ -155,6 +155,6 @@ export class TransactionsService {
 
   async remove(userId: string, id: string) {
     const result = await this.prisma.transaction.deleteMany({ where: { id, userId } });
-    if (result.count !== 1) throw new NotFoundException('El movimiento no existe.');
+    if (result.count !== 1) throw new NotFoundException('The transaction does not exist.');
   }
 }

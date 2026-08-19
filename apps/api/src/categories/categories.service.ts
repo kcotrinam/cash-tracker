@@ -1,5 +1,5 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, TransactionType } from '@prisma/client';
+import { AppLanguage, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { defaultCategories } from './category-defaults';
 import { displayCategoryName, normalizeCategoryName } from './category-normalization';
@@ -10,13 +10,11 @@ const categorySelect = {
   name: true,
   type: true,
   isDefault: true,
+  defaultKey: true,
   isFallback: true,
   isActive: true,
 } as const;
-const others = {
-  [TransactionType.INCOME]: 'otros ingresos',
-  [TransactionType.EXPENSE]: 'otros gastos',
-};
+const fallbackDefaultKeys = new Set(['other-income', 'other-expenses']);
 
 @Injectable()
 export class CategoriesService {
@@ -24,16 +22,16 @@ export class CategoriesService {
 
   async provisionDefaults(
     userId: string,
+    language: AppLanguage = AppLanguage.EN,
     db: Prisma.TransactionClient | PrismaService = this.prisma,
   ) {
     await Promise.all(
-      defaultCategories.map((category) =>
+      defaultCategories(language).map((category) =>
         db.category.upsert({
           where: {
-            userId_type_normalizedName: {
+            userId_defaultKey: {
               userId,
-              type: category.type,
-              normalizedName: category.normalizedName,
+              defaultKey: category.defaultKey,
             },
           },
           create: { userId, ...category, isDefault: true },
@@ -41,6 +39,23 @@ export class CategoriesService {
         }),
       ),
     );
+  }
+
+  async localizeDefaults(
+    userId: string,
+    language: AppLanguage,
+    db: Prisma.TransactionClient | PrismaService = this.prisma,
+  ) {
+    for (const category of defaultCategories(language)) {
+      await db.category.updateMany({
+        where: { userId, defaultKey: category.defaultKey },
+        data: {
+          name: category.name,
+          normalizedName: category.normalizedName,
+          isFallback: Boolean(category.isFallback),
+        },
+      });
+    }
   }
 
   async list(userId: string, query: ListCategoriesDto) {
@@ -59,7 +74,7 @@ export class CategoriesService {
     return categories.sort((a, b) => {
       const rank = (category: typeof a) => {
         const normalized = normalizeCategoryName(category.name);
-        if (!normalizedSearch) return normalized === others[category.type] ? 1 : 0;
+        if (!normalizedSearch) return fallbackDefaultKeys.has(category.defaultKey ?? '') ? 1 : 0;
         return normalized === normalizedSearch
           ? 0
           : normalized.startsWith(normalizedSearch)
@@ -68,7 +83,7 @@ export class CategoriesService {
       };
       return (
         rank(a) - rank(b) ||
-        a.name.localeCompare(b.name, 'es') ||
+        a.name.localeCompare(b.name, 'en') ||
         a.id.localeCompare(b.id)
       );
     });
@@ -84,14 +99,14 @@ export class CategoriesService {
       });
     } catch (error) {
       if ((error as { code?: string }).code === 'P2002')
-        throw new ConflictException('Ya existe una categoría con ese nombre.');
+        throw new ConflictException('A category with that name already exists.');
       throw error;
     }
   }
 
   async update(userId: string, id: string, dto: UpdateCategoryDto) {
     const category = await this.prisma.category.findFirst({ where: { id, userId } });
-    if (!category) throw new NotFoundException('La categoría no existe.');
+    if (!category) throw new NotFoundException('The category does not exist.');
     const name = displayCategoryName(dto.name);
     const normalizedName = normalizeCategoryName(name);
     try {
@@ -102,16 +117,16 @@ export class CategoriesService {
       });
     } catch (error) {
       if ((error as { code?: string }).code === 'P2002')
-        throw new ConflictException('Ya existe una categoría con ese nombre.');
+        throw new ConflictException('A category with that name already exists.');
       throw error;
     }
   }
 
   async updateStatus(userId: string, id: string, isActive: boolean) {
     const category = await this.prisma.category.findFirst({ where: { id, userId } });
-    if (!category) throw new NotFoundException('La categoría no existe.');
+    if (!category) throw new NotFoundException('The category does not exist.');
     if (!isActive && category.isFallback)
-      throw new ForbiddenException('Las categorías predeterminadas no se pueden desactivar.');
+      throw new ForbiddenException('Default categories cannot be deactivated.');
     return this.prisma.category.update({
       where: { id },
       data: { isActive },

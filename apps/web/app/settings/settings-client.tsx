@@ -7,9 +7,10 @@ import { AppShell } from '../components/app-shell';
 
 type Section = 'overview' | 'profile' | 'preferences' | 'categories' | 'security';
 type Currency = 'PEN' | 'USD';
+type Language = 'EN' | 'ES';
 type CategoryType = 'INCOME' | 'EXPENSE';
 type Profile = { id: string; email: string; displayName: string };
-type Preferences = { defaultCurrency: Currency; timezone: string };
+type Preferences = { defaultCurrency: Currency; timezone: string; language: Language };
 type Category = {
   id: string;
   name: string;
@@ -27,10 +28,10 @@ const sections: {
   label: string;
   description: string;
 }[] = [
-  { id: 'profile', label: 'Perfil', description: 'Tu nombre y correo electrónico' },
-  { id: 'preferences', label: 'Preferencias', description: 'Moneda y zona horaria' },
-  { id: 'categories', label: 'Categorías', description: 'Organiza ingresos y gastos' },
-  { id: 'security', label: 'Seguridad', description: 'Cambia tu contraseña' },
+  { id: 'profile', label: 'Profile', description: 'Your name and email address' },
+  { id: 'preferences', label: 'Preferences', description: 'Currency and time zone' },
+  { id: 'categories', label: 'Categories', description: 'Organize income and expenses' },
+  { id: 'security', label: 'Security', description: 'Change your password' },
 ];
 
 function messageFrom(response: Response, fallback: string) {
@@ -47,13 +48,13 @@ function SettingsHeader({ section }: { section: Section }) {
   const selected = section === 'overview' ? undefined : section;
   const title = selected
     ? sections.find((item) => item.id === selected)?.label
-    : 'Configuración';
+    : 'Settings';
   return (
     <>
       <header className="flex min-h-16 items-center border-b border-[var(--border)] px-4 md:hidden">
         {selected && (
           <Link
-            aria-label="Volver a Configuración"
+            aria-label="Back to Settings"
             className="mr-3 flex size-11 items-center justify-center rounded-lg text-xl hover:bg-[var(--surface-raised)]"
             href="/settings"
           >
@@ -63,8 +64,8 @@ function SettingsHeader({ section }: { section: Section }) {
         <h1 className="text-xl font-semibold tracking-[-0.02em]">{title}</h1>
       </header>
       <div className="hidden border-b border-[var(--border)] px-8 pt-9 md:block lg:px-12">
-        <h1 className="text-2xl font-semibold tracking-[-0.03em]">Configuración</h1>
-        <nav aria-label="Secciones de configuración" className="mt-7 flex gap-7">
+        <h1 className="text-2xl font-semibold tracking-[-0.03em]">Settings</h1>
+        <nav aria-label="Settings sections" className="mt-7 flex gap-7">
           {sections.map((item) => (
             <Link
               aria-current={selected === item.id ? 'page' : undefined}
@@ -85,7 +86,7 @@ function Overview() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-5 md:hidden">
       <p className="mb-5 text-sm leading-6 text-[var(--muted-foreground)]">
-        Ajusta cómo funciona CashTracker para ti.
+        Customize how CashTracker works for you.
       </p>
       <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
         {sections.map((item) => (
@@ -124,12 +125,12 @@ function ProfileForm() {
         setProfile(value);
         setName(value.displayName);
       })
-      .catch(() => setError('No pudimos cargar tu perfil.'));
+      .catch(() => setError('We could not load your profile.'));
   }, []);
   async function submit(event: FormEvent) {
     event.preventDefault();
     const trimmed = name.trim();
-    if (!trimmed) return setError('Ingresa tu nombre.');
+    if (!trimmed) return setError('Enter your name.');
     setSaving(true);
     setError('');
     setSuccess('');
@@ -139,21 +140,21 @@ function ProfileForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: trimmed }),
       });
-      if (!r.ok) throw new Error(await messageFrom(r, 'No pudimos guardar los cambios.'));
+      if (!r.ok) throw new Error(await messageFrom(r, 'We could not save your changes.'));
       const value = (await r.json()) as Profile;
       setProfile(value);
       setName(value.displayName);
-      setSuccess('Perfil actualizado correctamente.');
+      setSuccess('Profile updated successfully.');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No pudimos guardar los cambios.');
+      setError(e instanceof Error ? e.message : 'We could not save your changes.');
     } finally {
       setSaving(false);
     }
   }
   return (
-    <Section title="Perfil" intro="Actualiza el nombre con el que te reconocemos.">
+    <Section title="Profile" intro="Update the name we use to identify you.">
       <form onSubmit={submit} noValidate>
-        <label htmlFor="display-name">Nombre completo</label>
+        <label htmlFor="display-name">Full name</label>
         <input
           autoComplete="name"
           className={input}
@@ -166,7 +167,7 @@ function ProfileForm() {
           className="mt-5 block text-[var(--muted-foreground)]"
           htmlFor="profile-email"
         >
-          Correo electrónico
+          Email address
         </label>
         <input
           className={input}
@@ -185,7 +186,7 @@ function ProfileForm() {
             {success}
           </p>
         )}
-        <Submit saving={saving} label="Guardar cambios" />
+        <Submit saving={saving} label="Save changes" />
       </form>
     </Section>
   );
@@ -195,6 +196,7 @@ function PreferencesForm() {
   const [preferences, setPreferences] = useState<Preferences>({
     defaultCurrency: 'PEN',
     timezone: 'America/Lima',
+    language: 'EN',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -205,7 +207,7 @@ function PreferencesForm() {
         if (!r.ok) throw new Error();
         setPreferences((await r.json()) as Preferences);
       })
-      .catch(() => setError('No pudimos cargar tus preferencias.'));
+      .catch(() => setError('We could not load your preferences.'));
   }, []);
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -219,22 +221,22 @@ function PreferencesForm() {
         body: JSON.stringify(preferences),
       });
       if (!r.ok)
-        throw new Error(await messageFrom(r, 'No pudimos guardar las preferencias.'));
+        throw new Error(await messageFrom(r, 'We could not save your preferences.'));
       setPreferences((await r.json()) as Preferences);
-      setSuccess('Preferencias actualizadas correctamente.');
+      setSuccess('Preferences updated successfully.');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No pudimos guardar las preferencias.');
+      setError(e instanceof Error ? e.message : 'We could not save your preferences.');
     } finally {
       setSaving(false);
     }
   }
   return (
     <Section
-      title="Preferencias"
-      intro="Estos valores se usarán al crear nuevos movimientos y recurrencias."
+      title="Preferences"
+      intro="These values will be used when creating new transactions and recurring items."
     >
       <form onSubmit={submit}>
-        <label htmlFor="currency">Moneda predeterminada</label>
+        <label htmlFor="currency">Default currency</label>
         <select
           className={input}
           id="currency"
@@ -243,14 +245,14 @@ function PreferencesForm() {
           }
           value={preferences.defaultCurrency}
         >
-          <option value="PEN">PEN — Sol peruano</option>
-          <option value="USD">USD — Dólar estadounidense</option>
+          <option value="PEN">PEN — Peruvian sol</option>
+          <option value="USD">USD — US dollar</option>
         </select>
         <p className="mt-2 text-sm leading-5 text-[var(--muted-foreground)]">
-          No modifica tus movimientos existentes.
+          This does not change existing transactions.
         </p>
         <label className="mt-6 block" htmlFor="timezone">
-          Zona horaria
+          Time zone
         </label>
         <input
           className={input}
@@ -267,7 +269,22 @@ function PreferencesForm() {
           <option value="America/Argentina/Buenos_Aires" />
         </datalist>
         <p className="mt-2 text-sm leading-5 text-[var(--muted-foreground)]">
-          Afecta el procesamiento futuro de recurrencias, no las fechas históricas.
+          This affects future recurring-item processing, not past dates.
+        </p>
+        <label className="mt-6 block" htmlFor="language">
+          Category language
+        </label>
+        <select
+          className={input}
+          id="language"
+          onChange={(e) => setPreferences((v) => ({ ...v, language: e.target.value as Language }))}
+          value={preferences.language}
+        >
+          <option value="EN">English</option>
+          <option value="ES">Spanish</option>
+        </select>
+        <p className="mt-2 text-sm leading-5 text-[var(--muted-foreground)]">
+          This updates only the system’s default categories. Categories you created are unchanged.
         </p>
         {error && (
           <p className="mt-4 text-sm text-[var(--destructive)]" role="alert">
@@ -279,7 +296,7 @@ function PreferencesForm() {
             {success}
           </p>
         )}
-        <Submit saving={saving} label="Guardar cambios" />
+        <Submit saving={saving} label="Save changes" />
       </form>
     </Section>
   );
@@ -300,7 +317,7 @@ function CategoriesForm() {
         if (!r.ok) throw new Error();
         setCategories((await r.json()) as Category[]);
       })
-      .catch(() => setError('No pudimos cargar las categorías.'));
+      .catch(() => setError('We could not load categories.'));
   useEffect(() => {
     void load();
   }, []);
@@ -315,11 +332,11 @@ function CategoriesForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: draft, type }),
       });
-      if (!r.ok) throw new Error(await messageFrom(r, 'No pudimos crear la categoría.'));
+      if (!r.ok) throw new Error(await messageFrom(r, 'We could not create the category.'));
       setDraft('');
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No pudimos crear la categoría.');
+      setError(e instanceof Error ? e.message : 'We could not create the category.');
     } finally {
       setCreating(false);
     }
@@ -333,11 +350,11 @@ function CategoriesForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name }),
       });
-      if (!r.ok) throw new Error(await messageFrom(r, 'No pudimos cambiar el nombre.'));
+      if (!r.ok) throw new Error(await messageFrom(r, 'We could not rename the category.'));
       setEditing(null);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No pudimos cambiar el nombre.');
+      setError(e instanceof Error ? e.message : 'We could not rename the category.');
     }
   }
   async function changeStatus(category: Category, isActive: boolean) {
@@ -348,44 +365,44 @@ function CategoriesForm() {
         body: JSON.stringify({ isActive }),
       });
       if (!r.ok)
-        throw new Error(await messageFrom(r, 'No pudimos actualizar la categoría.'));
+        throw new Error(await messageFrom(r, 'We could not update the category.'));
       setDeactivating(null);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No pudimos actualizar la categoría.');
+      setError(e instanceof Error ? e.message : 'We could not update the category.');
     }
   }
   return (
     <Section
-      title="Categorías"
-      intro="Las categorías inactivas se conservan en tus movimientos, pero no aparecen al crear nuevos."
+      title="Categories"
+      intro="Inactive categories remain on existing transactions, but are not shown when creating new ones."
     >
       <form
         className="mb-8 flex flex-col gap-3 border-b border-[var(--border)] pb-7 sm:flex-row"
         onSubmit={create}
       >
         <input
-          aria-label="Nueva categoría"
+          aria-label="New category"
           className="h-12 flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-base"
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Nueva categoría"
+          placeholder="New category"
           value={draft}
         />
         <select
-          aria-label="Tipo de categoría"
+          aria-label="Category type"
           className="h-12 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3"
           onChange={(e) => setType(e.target.value as CategoryType)}
           value={type}
         >
-          <option value="EXPENSE">Gasto</option>
-          <option value="INCOME">Ingreso</option>
+          <option value="EXPENSE">Expense</option>
+          <option value="INCOME">Income</option>
         </select>
         <button
           className="h-12 rounded-lg bg-[var(--primary)] px-5 font-medium text-[var(--primary-foreground)] disabled:opacity-60"
           disabled={creating}
           type="submit"
         >
-          {creating ? 'Creando…' : 'Nueva categoría'}
+          {creating ? 'Creating…' : 'New category'}
         </button>
       </form>
       {error && (
@@ -403,13 +420,13 @@ function CategoriesForm() {
             setName(c.name);
           }}
           onReactivate={(c) => void changeStatus(c, true)}
-          title={categoryType === 'EXPENSE' ? 'Gastos' : 'Ingresos'}
+          title={categoryType === 'EXPENSE' ? 'Expenses' : 'Income'}
         />
       ))}
       {editing && (
-        <Dialog title="Cambiar nombre" onClose={() => setEditing(null)}>
+        <Dialog title="Rename category" onClose={() => setEditing(null)}>
           <form onSubmit={rename}>
-            <label htmlFor="category-name">Nombre de categoría</label>
+            <label htmlFor="category-name">Category name</label>
             <input
               autoFocus
               className={input}
@@ -417,14 +434,14 @@ function CategoriesForm() {
               onChange={(e) => setName(e.target.value)}
               value={name}
             />
-            <DialogActions label="Guardar" />
+            <DialogActions label="Save" />
           </form>
         </Dialog>
       )}
       {deactivating && (
-        <Dialog title="¿Desactivar categoría?" onClose={() => setDeactivating(null)}>
+        <Dialog title="Deactivate category?" onClose={() => setDeactivating(null)}>
           <p className="text-sm leading-6 text-[var(--muted-foreground)]">
-            {deactivating.name} seguirá apareciendo en tus movimientos anteriores.
+            {deactivating.name} will remain on your previous transactions.
           </p>
           <div className="mt-6 flex justify-end gap-3">
             <button
@@ -432,14 +449,14 @@ function CategoriesForm() {
               onClick={() => setDeactivating(null)}
               type="button"
             >
-              Cancelar
+              Cancel
             </button>
             <button
               className="h-11 rounded-lg border border-[var(--destructive)] px-4 text-[var(--destructive)]"
               onClick={() => void changeStatus(deactivating, false)}
               type="button"
             >
-              Desactivar
+              Deactivate
             </button>
           </div>
         </Dialog>
@@ -477,10 +494,10 @@ function CategoryGroup({
               </p>
               <p className="mt-1 text-xs text-[var(--muted-foreground)]">
                 {category.isFallback
-                  ? 'Categoría predeterminada'
+                  ? 'Default category'
                   : category.isActive
-                    ? 'Activa'
-                    : 'Inactiva'}
+                    ? 'Active'
+                    : 'Inactive'}
               </p>
             </div>
             {category.isActive ? (
@@ -490,7 +507,7 @@ function CategoryGroup({
                   onClick={() => onEdit(category)}
                   type="button"
                 >
-                  Editar
+                  Edit
                 </button>
                 {!category.isFallback && (
                   <button
@@ -498,7 +515,7 @@ function CategoryGroup({
                     onClick={() => onDeactivate(category)}
                     type="button"
                   >
-                    Desactivar
+                    Deactivate
                   </button>
                 )}
               </>
@@ -508,7 +525,7 @@ function CategoryGroup({
                 onClick={() => onReactivate(category)}
                 type="button"
               >
-                Reactivar
+                Reactivate
               </button>
             )}
           </div>
@@ -530,7 +547,7 @@ function SecurityForm() {
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (form.newPassword !== form.confirmPassword)
-      return setError('Las contraseñas nuevas no coinciden.');
+      return setError('The new passwords do not match.');
     setSaving(true);
     setError('');
     setSuccess('');
@@ -541,11 +558,11 @@ function SecurityForm() {
         body: JSON.stringify(form),
       });
       if (!r.ok)
-        throw new Error(await messageFrom(r, 'No pudimos cambiar tu contraseña.'));
+        throw new Error(await messageFrom(r, 'We could not change your password.'));
       setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      setSuccess('Contraseña actualizada. Cerramos las demás sesiones por seguridad.');
+      setSuccess('Password updated. We signed out your other sessions for security.');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No pudimos cambiar tu contraseña.');
+      setError(e instanceof Error ? e.message : 'We could not change your password.');
     } finally {
       setSaving(false);
     }
@@ -554,11 +571,11 @@ function SecurityForm() {
     setForm((v) => ({ ...v, [name]: value }));
   return (
     <Section
-      title="Seguridad"
-      intro="Al cambiar tu contraseña, cerraremos tus otras sesiones activas."
+      title="Security"
+      intro="When you change your password, we will sign out your other active sessions."
     >
       <form onSubmit={submit}>
-        <label htmlFor="current-password">Contraseña actual</label>
+        <label htmlFor="current-password">Current password</label>
         <input
           autoComplete="current-password"
           className={input}
@@ -568,7 +585,7 @@ function SecurityForm() {
           value={form.currentPassword}
         />
         <label className="mt-5 block" htmlFor="new-password">
-          Nueva contraseña
+          New password
         </label>
         <input
           autoComplete="new-password"
@@ -580,10 +597,10 @@ function SecurityForm() {
           value={form.newPassword}
         />
         <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-          Usa al menos 10 caracteres.
+          Use at least 10 characters.
         </p>
         <label className="mt-5 block" htmlFor="confirm-password">
-          Confirmar nueva contraseña
+          Confirm new password
         </label>
         <input
           autoComplete="new-password"
@@ -604,7 +621,7 @@ function SecurityForm() {
             {success}
           </p>
         )}
-        <Submit saving={saving} label="Guardar cambios" />
+        <Submit saving={saving} label="Save changes" />
       </form>
     </Section>
   );
@@ -636,7 +653,7 @@ function Submit({ saving, label }: { saving: boolean; label: string }) {
       disabled={saving}
       type="submit"
     >
-      {saving ? 'Guardando…' : label}
+      {saving ? 'Saving…' : label}
     </button>
   );
 }
@@ -659,7 +676,7 @@ function Dialog({
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
           <button
-            aria-label="Cerrar"
+            aria-label="Close"
             className="size-11 rounded-lg hover:bg-[var(--surface-raised)]"
             onClick={onClose}
             type="button"

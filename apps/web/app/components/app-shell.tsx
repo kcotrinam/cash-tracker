@@ -62,10 +62,10 @@ const navigationItems: {
   label: string;
 }[] = [
   { href: '/dashboard', icon: 'dashboard', id: 'dashboard', label: 'Dashboard' },
-  { href: '/transactions', icon: 'receipt', id: 'transactions', label: 'Movimientos' },
-  { href: '/transactions/new', icon: 'plus', id: 'new', label: 'Añadir movimiento' },
-  { href: '/recurring', icon: 'repeat', id: 'recurring', label: 'Recurrentes' },
-  { href: '/settings', icon: 'settings', id: 'settings', label: 'Configuración' },
+  { href: '/transactions', icon: 'receipt', id: 'transactions', label: 'Transactions' },
+  { href: '/transactions/new', icon: 'plus', id: 'new', label: 'Add transaction' },
+  { href: '/recurring', icon: 'repeat', id: 'recurring', label: 'Recurring' },
+  { href: '/settings', icon: 'settings', id: 'settings', label: 'Settings' },
 ];
 
 export function AppShell({
@@ -116,7 +116,7 @@ export function AppShell({
             CashTracker
           </span>
         </Link>
-        <nav aria-label="Navegación principal" className="mt-10 min-w-[216px] space-y-2">
+        <nav aria-label="Main navigation" className="mt-10 min-w-[216px] space-y-2">
           {navigationItems.map((item) => {
             const selected = item.id === active;
             return (
@@ -139,7 +139,7 @@ export function AppShell({
       </aside>
       <div className="pb-[84px] md:ml-20 md:pb-0">{children}</div>
       <nav
-        aria-label="Navegación principal"
+        aria-label="Main navigation"
         className="fixed inset-x-0 bottom-0 z-20 flex h-[76px] items-center justify-around border-t border-[var(--border)] bg-[var(--surface-lowest)] px-3 pb-[env(safe-area-inset-bottom)] md:hidden"
       >
         {navigationItems.map((item) => {
@@ -153,7 +153,7 @@ export function AppShell({
               onClick={(event) => void navigate(event, item.href, selected)}
             >
               <AppIcon name={item.icon} />
-              {item.id === 'new' ? 'Añadir' : item.label}
+              {item.id === 'new' ? 'Add' : item.label}
             </Link>
           );
         })}

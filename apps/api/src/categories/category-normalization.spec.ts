@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { TransactionType } from '@prisma/client';
+import { AppLanguage, TransactionType } from '@prisma/client';
 import { defaultCategories } from './category-defaults';
 import { normalizeCategoryName } from './category-normalization';
 
@@ -11,23 +11,28 @@ test('normalizes accents, casing and whitespace for category comparison', () => 
 });
 
 test('defines the ten idempotent defaults with the expected transaction types', () => {
-  assert.equal(defaultCategories.length, 10);
+  const categories = defaultCategories(AppLanguage.EN);
+  assert.equal(categories.length, 10);
   assert.equal(
-    defaultCategories.filter((category) => category.type === TransactionType.INCOME)
-      .length,
+    categories.filter((category) => category.type === TransactionType.INCOME).length,
     3,
   );
   assert.equal(
-    defaultCategories.filter((category) => category.type === TransactionType.EXPENSE)
-      .length,
+    categories.filter((category) => category.type === TransactionType.EXPENSE).length,
     7,
   );
-  assert.ok(defaultCategories.some((category) => category.name === 'Otros gastos'));
-  assert.ok(defaultCategories.some((category) => category.name === 'Otros ingresos'));
+  assert.ok(categories.some((category) => category.name === 'Other expenses'));
+  assert.ok(categories.some((category) => category.name === 'Other income'));
   assert.deepEqual(
-    defaultCategories
+    categories
       .filter((category) => 'isFallback' in category && category.isFallback)
       .map((category) => category.name),
-    ['Otros ingresos', 'Otros gastos'],
+    ['Other income', 'Other expenses'],
   );
+});
+
+test('localizes defaults from stable category keys', () => {
+  const categories = defaultCategories(AppLanguage.ES);
+  assert.equal(categories.find((category) => category.defaultKey === 'salary')?.name, 'Salario');
+  assert.equal(categories.find((category) => category.defaultKey === 'other-expenses')?.name, 'Otros gastos');
 });
