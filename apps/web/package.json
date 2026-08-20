@@ -12,6 +12,7 @@
   "dependencies": {
     "@cashtracker/types": "workspace:*",
     "next": "latest",
+    "next-intl": "^4.13.7",
     "react": "latest",
     "react-dom": "latest"
   },

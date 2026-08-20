@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { authenticatedFetch, getApiUrl } from '../authenticated-fetch';
 import { AppShell } from '../components/app-shell';
+import { useAppLocale } from '../locale-provider';
 
 type Section = 'overview' | 'profile' | 'preferences' | 'categories' | 'security';
 type Currency = 'PEN' | 'USD';
@@ -193,6 +195,8 @@ function ProfileForm() {
 }
 
 function PreferencesForm() {
+  const t = useTranslations('Settings');
+  const { setLanguage } = useAppLocale();
   const [preferences, setPreferences] = useState<Preferences>({
     defaultCurrency: 'PEN',
     timezone: 'America/Lima',
@@ -223,7 +227,8 @@ function PreferencesForm() {
       if (!r.ok)
         throw new Error(await messageFrom(r, 'We could not save your preferences.'));
       setPreferences((await r.json()) as Preferences);
-      setSuccess('Preferences updated successfully.');
+      setLanguage(preferences.language);
+      setSuccess(t('updated'));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'We could not save your preferences.');
     } finally {
@@ -272,7 +277,7 @@ function PreferencesForm() {
           This affects future recurring-item processing, not past dates.
         </p>
         <label className="mt-6 block" htmlFor="language">
-          Category language
+          {t('categoryLanguage')}
         </label>
         <select
           className={input}
@@ -280,11 +285,11 @@ function PreferencesForm() {
           onChange={(e) => setPreferences((v) => ({ ...v, language: e.target.value as Language }))}
           value={preferences.language}
         >
-          <option value="EN">English</option>
-          <option value="ES">Spanish</option>
+          <option value="EN">{t('english')}</option>
+          <option value="ES">{t('spanish')}</option>
         </select>
         <p className="mt-2 text-sm leading-5 text-[var(--muted-foreground)]">
-          This updates only the system’s default categories. Categories you created are unchanged.
+          {t('categoryLanguageHint')}
         </p>
         {error && (
           <p className="mt-4 text-sm text-[var(--destructive)]" role="alert">

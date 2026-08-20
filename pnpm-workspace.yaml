@@ -7,8 +7,10 @@ ignoredBuiltDependencies:
   - '@scarf/scarf'
   - unrs-resolver
 allowBuilds:
+  '@parcel/watcher': true
   '@prisma/engines': true
   '@scarf/scarf': false
+  '@swc/core': true
   argon2: true
   esbuild: true
   prisma: true

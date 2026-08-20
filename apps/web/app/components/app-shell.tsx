@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { MouseEvent, ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   authenticatedFetch,
   getApiUrl,
@@ -55,19 +56,6 @@ export function AppIcon({ name }: { name: AppIconName }) {
 
 export type AppShellPage = 'dashboard' | 'transactions' | 'new' | 'recurring' | 'settings';
 
-const navigationItems: {
-  href: string;
-  icon: AppIconName;
-  id: AppShellPage;
-  label: string;
-}[] = [
-  { href: '/dashboard', icon: 'dashboard', id: 'dashboard', label: 'Dashboard' },
-  { href: '/transactions', icon: 'receipt', id: 'transactions', label: 'Transactions' },
-  { href: '/transactions/new', icon: 'plus', id: 'new', label: 'Add transaction' },
-  { href: '/recurring', icon: 'repeat', id: 'recurring', label: 'Recurring' },
-  { href: '/settings', icon: 'settings', id: 'settings', label: 'Settings' },
-];
-
 export function AppShell({
   active,
   children,
@@ -78,6 +66,14 @@ export function AppShell({
   screenClassName: string;
 }) {
   const router = useRouter();
+  const t = useTranslations('Navigation');
+  const navigationItems: { href: string; icon: AppIconName; id: AppShellPage; label: string }[] = [
+    { href: '/dashboard', icon: 'dashboard', id: 'dashboard', label: t('dashboard') },
+    { href: '/transactions', icon: 'receipt', id: 'transactions', label: t('transactions') },
+    { href: '/transactions/new', icon: 'plus', id: 'new', label: t('newTransaction') },
+    { href: '/recurring', icon: 'repeat', id: 'recurring', label: t('recurring') },
+    { href: '/settings', icon: 'settings', id: 'settings', label: t('settings') },
+  ];
 
   async function navigate(
     event: MouseEvent<HTMLAnchorElement>,
@@ -116,7 +112,7 @@ export function AppShell({
             CashTracker
           </span>
         </Link>
-        <nav aria-label="Main navigation" className="mt-10 min-w-[216px] space-y-2">
+        <nav aria-label={t('main')} className="mt-10 min-w-[216px] space-y-2">
           {navigationItems.map((item) => {
             const selected = item.id === active;
             return (
@@ -139,7 +135,7 @@ export function AppShell({
       </aside>
       <div className="pb-[84px] md:ml-20 md:pb-0">{children}</div>
       <nav
-        aria-label="Main navigation"
+        aria-label={t('main')}
         className="fixed inset-x-0 bottom-0 z-20 flex h-[76px] items-center justify-around border-t border-[var(--border)] bg-[var(--surface-lowest)] px-3 pb-[env(safe-area-inset-bottom)] md:hidden"
       >
         {navigationItems.map((item) => {
@@ -153,7 +149,7 @@ export function AppShell({
               onClick={(event) => void navigate(event, item.href, selected)}
             >
               <AppIcon name={item.icon} />
-              {item.id === 'new' ? 'Add' : item.label}
+              {item.id === 'new' ? t('add') : item.label}
             </Link>
           );
         })}
