@@ -54,7 +54,8 @@ export function AppIcon({ name }: { name: AppIconName }) {
   );
 }
 
-export type AppShellPage = 'dashboard' | 'transactions' | 'new' | 'recurring' | 'settings';
+export type AppShellPage =
+  'dashboard' | 'transactions' | 'new' | 'recurring' | 'settings';
 
 export function AppShell({
   active,
@@ -67,9 +68,19 @@ export function AppShell({
 }) {
   const router = useRouter();
   const t = useTranslations('Navigation');
-  const navigationItems: { href: string; icon: AppIconName; id: AppShellPage; label: string }[] = [
+  const navigationItems: {
+    href: string;
+    icon: AppIconName;
+    id: AppShellPage;
+    label: string;
+  }[] = [
     { href: '/dashboard', icon: 'dashboard', id: 'dashboard', label: t('dashboard') },
-    { href: '/transactions', icon: 'receipt', id: 'transactions', label: t('transactions') },
+    {
+      href: '/transactions',
+      icon: 'receipt',
+      id: 'transactions',
+      label: t('transactions'),
+    },
     { href: '/transactions/new', icon: 'plus', id: 'new', label: t('newTransaction') },
     { href: '/recurring', icon: 'repeat', id: 'recurring', label: t('recurring') },
     { href: '/settings', icon: 'settings', id: 'settings', label: t('settings') },
@@ -103,29 +114,29 @@ export function AppShell({
     <div
       className={`${screenClassName} min-h-[100dvh] bg-[var(--background)] text-[var(--foreground)]`}
     >
-      <aside className="group fixed inset-y-0 left-0 z-30 hidden w-20 overflow-hidden border-r border-[var(--border)] bg-[var(--surface-lowest)] px-3 py-5 transition-[width] duration-300 ease-out hover:w-60 focus-within:w-60 md:flex md:flex-col">
-        <Link className="flex h-12 min-w-[216px] items-center gap-4" href="/dashboard">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 border-r border-[var(--border)] bg-[var(--surface-lowest)] px-3 py-5 md:flex md:flex-col">
+        <Link className="flex h-12 items-center gap-4" href="/dashboard">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]">
             <AppIcon name="wallet" />
           </span>
-          <span className="whitespace-nowrap text-sm font-semibold tracking-[-0.02em] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+          <span className="whitespace-nowrap text-sm font-semibold tracking-[-0.02em]">
             CashTracker
           </span>
         </Link>
-        <nav aria-label={t('main')} className="mt-10 min-w-[216px] space-y-2">
+        <nav aria-label={t('main')} className="mt-10 space-y-2">
           {navigationItems.map((item) => {
             const selected = item.id === active;
             return (
               <Link
                 aria-current={selected ? 'page' : undefined}
-                className={`flex h-12 w-12 items-center rounded-lg px-[14px] text-[var(--muted-foreground)] transition-[width,background-color,color] duration-300 ease-out hover:w-full hover:bg-[var(--surface-low)] hover:text-[var(--foreground)] group-hover:w-full group-focus-within:w-full ${selected ? 'bg-[var(--nav-active)] text-[var(--foreground)] hover:bg-[var(--nav-active)]' : ''}`}
+                className={`flex h-12 w-full items-center rounded-lg px-[14px] text-[var(--muted-foreground)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--foreground)] ${selected ? 'bg-[var(--nav-active)] text-[var(--foreground)] hover:bg-[var(--nav-active)]' : ''}`}
                 href={item.href}
                 key={item.id}
                 onClick={(event) => void navigate(event, item.href, selected)}
                 title={item.label}
               >
                 <AppIcon name={item.icon} />
-                <span className="ml-4 whitespace-nowrap text-sm font-medium opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+                <span className="ml-4 whitespace-nowrap text-sm font-medium">
                   {item.label}
                 </span>
               </Link>
@@ -133,7 +144,7 @@ export function AppShell({
           })}
         </nav>
       </aside>
-      <div className="pb-[84px] md:ml-20 md:pb-0">{children}</div>
+      <div className="pb-[84px] md:ml-60 md:pb-0">{children}</div>
       <nav
         aria-label={t('main')}
         className="fixed inset-x-0 bottom-0 z-20 flex h-[76px] items-center justify-around border-t border-[var(--border)] bg-[var(--surface-lowest)] px-3 pb-[env(safe-area-inset-bottom)] md:hidden"

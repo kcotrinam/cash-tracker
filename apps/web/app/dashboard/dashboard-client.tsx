@@ -3,41 +3,44 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { authenticatedFetch, getApiUrl } from '../authenticated-fetch';
 import { getDefaultCurrency } from '../default-currency';
+import { useAppLocale } from '../locale-provider';
 import { AppShell } from '../components/app-shell';
 import { formatMoney, toCents } from './money';
 import type { CurrencyCode, DashboardData } from './dashboard.types';
 
 type ViewState = 'loading' | 'populated' | 'empty' | 'error';
 const api = getApiUrl();
-const currentMonth = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' }).slice(0, 7);
+const currentMonth = new Date()
+  .toLocaleDateString('en-CA', { timeZone: 'America/Lima' })
+  .slice(0, 7);
 const months = Array.from({ length: 12 }, (_, index) => {
   const date = new Date(`${currentMonth}-01T12:00:00`);
   date.setMonth(date.getMonth() - index);
   return date.toLocaleDateString('en-CA').slice(0, 7);
 });
-const statusLabel = {
-  PENDING: 'Pending',
-  RECORDED: 'Recorded',
-  INACTIVE: 'Inactive',
-} as const;
-
 function validCurrency(value: string | null): value is CurrencyCode {
   return value === 'PEN' || value === 'USD';
 }
 function validMonth(value: string | null): value is string {
   return Boolean(value && /^\d{4}-(0[1-9]|1[0-2])$/.test(value));
 }
-function dateLabel(value: string) {
-  return new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short' })
+function dateLabel(value: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' })
     .format(new Date(`${value}T12:00:00`))
     .replace('.', '');
 }
-function monthLabel(value: string) {
-  return new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' })
+function monthLabel(value: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' })
     .format(new Date(`${value}-01T12:00:00`))
     .replace(/^./, (letter) => letter.toUpperCase());
+}
+function useDashboardIntl() {
+  const t = useTranslations('Dashboard');
+  const { locale } = useAppLocale();
+  return { t, numberLocale: locale === 'es' ? 'es-PE' : 'en-US' };
 }
 
 function Icon({ name }: { name: string }) {
@@ -73,38 +76,47 @@ function Icon({ name }: { name: string }) {
   );
 }
 function Summary({ data }: { data: DashboardData }) {
+  const { t, numberLocale } = useDashboardIntl();
   return (
     <section
       aria-labelledby="summary-heading"
       className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.55fr_1fr_1fr]"
     >
       <h2 id="summary-heading" className="sr-only">
-        Monthly summary
+        {t('monthlySummary')}
       </h2>
       <article className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:col-span-2 lg:col-span-1">
         <p className="text-sm font-medium text-[var(--muted-foreground)]">
-          Monthly balance
+          {t('monthlyBalance')}
         </p>
         <p className="mt-4 font-[family-name:var(--font-geist)] text-4xl font-semibold tracking-[-0.035em] tabular-nums sm:text-5xl">
-          {formatMoney(data.summary.netBalance, data.currency)}
+          {formatMoney(data.summary.netBalance, data.currency, false, numberLocale)}
         </p>
       </article>
       <article className="rounded-xl border border-[var(--border)] bg-[var(--surface-low)] p-5">
-        <p className="text-sm font-medium text-[var(--muted-foreground)]">Income</p>
+        <p className="text-sm font-medium text-[var(--muted-foreground)]">
+          {t('income')}
+        </p>
         <p className="mt-5 text-2xl font-medium tabular-nums text-[var(--income)]">
-          {formatMoney(data.summary.income, data.currency, true)}
+          {formatMoney(data.summary.income, data.currency, true, numberLocale)}
         </p>
       </article>
       <article className="rounded-xl border border-[var(--border)] bg-[var(--surface-low)] p-5">
-        <p className="text-sm font-medium text-[var(--muted-foreground)]">Expenses</p>
+        <p className="text-sm font-medium text-[var(--muted-foreground)]">
+          {t('expenses')}
+        </p>
         <p className="mt-5 text-2xl font-medium tabular-nums text-[var(--expense)]">
-          {formatMoney(data.summary.expenses, data.currency, true).replace('+', '−')}
+          {formatMoney(data.summary.expenses, data.currency, true, numberLocale).replace(
+            '+',
+            '−',
+          )}
         </p>
       </article>
     </section>
   );
 }
 function Spending({ data }: { data: DashboardData }) {
+  const { t, numberLocale } = useDashboardIntl();
   const items = [...data.spendingByCategory].sort((a, b) =>
     toCents(a.amount) === toCents(b.amount)
       ? 0
@@ -119,18 +131,18 @@ function Spending({ data }: { data: DashboardData }) {
     >
       <div className="mb-6 flex items-baseline justify-between gap-4">
         <h2 id="spending-heading" className="text-lg font-medium tracking-[-0.02em]">
-          Spending by category
+          {t('spendingByCategory')}
         </h2>
         <span className="text-sm text-[var(--muted-foreground)]">
-          {formatMoney(data.summary.expenses, data.currency)}
+          {formatMoney(data.summary.expenses, data.currency, false, numberLocale)}
         </span>
       </div>
       <p className="sr-only">
-        Spending by category:{' '}
+        {t('spendingByCategory')}:{' '}
         {items
           .map(
             (item) =>
-              `${item.categoryName}, ${formatMoney(item.amount, data.currency)}, ${item.percentage} percent`,
+              `${item.categoryName}, ${formatMoney(item.amount, data.currency, false, numberLocale)}, ${item.percentage}%`,
           )
           .join('; ')}
         .
@@ -141,7 +153,8 @@ function Spending({ data }: { data: DashboardData }) {
             <div className="mb-2 flex justify-between gap-4 text-sm">
               <span>{item.categoryName}</span>
               <span className="shrink-0 tabular-nums text-[var(--muted-foreground)]">
-                {formatMoney(item.amount, data.currency)} · {item.percentage}%
+                {formatMoney(item.amount, data.currency, false, numberLocale)} ·{' '}
+                {item.percentage}%
               </span>
             </div>
             <div
@@ -160,17 +173,16 @@ function Spending({ data }: { data: DashboardData }) {
   );
 }
 function Recurring({ data }: { data: DashboardData }) {
+  const { t, numberLocale } = useDashboardIntl();
   return (
     <section
       aria-labelledby="recurring-heading"
       className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6"
     >
       <h2 id="recurring-heading" className="text-lg font-medium tracking-[-0.02em]">
-        Recurring this month
+        {t('recurringThisMonth')}
       </h2>
-      <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-        They are not included in totals until recorded.
-      </p>
+      <p className="mt-1 text-sm text-[var(--muted-foreground)]">{t('recurringHint')}</p>
       <ul className="mt-5 divide-y divide-[var(--border)]">
         {data.recurringItems.map((item) => (
           <li className="py-4 first:pt-0 last:pb-0" key={item.id}>
@@ -178,21 +190,38 @@ function Recurring({ data }: { data: DashboardData }) {
               <div>
                 <p className="font-medium">{item.name}</p>
                 <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-                  Scheduled: {dateLabel(item.scheduledOn)} ·{' '}
+                  {t('scheduled')}: {dateLabel(item.scheduledOn, numberLocale)} ·{' '}
                   {item.recordedTransactionId
-                    ? 'Transaction recorded'
-                    : 'No transaction recorded'}
+                    ? t('recorded')
+                    : t('noTransactionRecorded')}
                 </p>
               </div>
               <p
                 className={`shrink-0 text-sm font-medium tabular-nums ${item.type === 'INCOME' ? 'text-[var(--income)]' : 'text-[var(--foreground)]'}`}
               >
-                {formatMoney(item.amount, data.currency, item.type === 'INCOME')}
+                {formatMoney(
+                  item.amount,
+                  data.currency,
+                  item.type === 'INCOME',
+                  numberLocale,
+                )}
               </p>
             </div>
             <span className="mt-2 inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-low)] px-2.5 py-1 text-xs font-medium text-[var(--muted-foreground)]">
-              {statusLabel[item.periodStatus]}
+              {item.periodStatus === 'RECORDED'
+                ? t('recorded')
+                : item.periodStatus === 'PENDING'
+                  ? t('pending')
+                  : t('inactive')}
             </span>
+            {item.periodStatus === 'PENDING' && (
+              <Link
+                className="mt-3 inline-flex min-h-11 items-center text-sm font-medium underline decoration-[var(--border)] underline-offset-4 hover:decoration-current"
+                href="/transactions/new"
+              >
+                {t('recordRecurring')}
+              </Link>
+            )}
           </li>
         ))}
       </ul>
@@ -200,6 +229,7 @@ function Recurring({ data }: { data: DashboardData }) {
   );
 }
 function Transactions({ data }: { data: DashboardData }) {
+  const { t, numberLocale } = useDashboardIntl();
   return (
     <section
       aria-labelledby="transactions-heading"
@@ -207,27 +237,27 @@ function Transactions({ data }: { data: DashboardData }) {
     >
       <div className="flex items-center justify-between p-5 sm:p-6">
         <h2 id="transactions-heading" className="text-lg font-medium tracking-[-0.02em]">
-          Recent transactions
+          {t('recentTransactions')}
         </h2>
         <span className="text-sm text-[var(--muted-foreground)]">
-          {data.recentTransactions.length} transactions
+          {t('transactionsCount', { count: data.recentTransactions.length })}
         </span>
       </div>
       <div className="hidden overflow-x-auto md:block">
         <table className="w-full text-left">
           <thead className="border-y border-[var(--border)] text-sm text-[var(--muted-foreground)]">
             <tr>
-              <th className="px-6 py-3 font-medium">Date</th>
-              <th className="px-6 py-3 font-medium">Description</th>
-              <th className="px-6 py-3 font-medium">Category</th>
-              <th className="px-6 py-3 text-right font-medium">Amount</th>
+              <th className="px-6 py-3 font-medium">{t('date')}</th>
+              <th className="px-6 py-3 font-medium">{t('description')}</th>
+              <th className="px-6 py-3 font-medium">{t('category')}</th>
+              <th className="px-6 py-3 text-right font-medium">{t('amount')}</th>
             </tr>
           </thead>
           <tbody>
             {data.recentTransactions.map((item) => (
               <tr className="border-b border-[var(--border)] last:border-0" key={item.id}>
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-[var(--muted-foreground)]">
-                  {dateLabel(item.occurredOn)}
+                  {dateLabel(item.occurredOn, numberLocale)}
                 </td>
                 <td className="px-6 py-4 font-medium">{item.description}</td>
                 <td className="px-6 py-4">
@@ -238,7 +268,12 @@ function Transactions({ data }: { data: DashboardData }) {
                 <td
                   className={`px-6 py-4 text-right font-medium tabular-nums ${item.type === 'INCOME' ? 'text-[var(--income)]' : 'text-[var(--expense)]'}`}
                 >
-                  {formatMoney(item.amount, data.currency, item.type === 'INCOME')}
+                  {formatMoney(
+                    item.amount,
+                    data.currency,
+                    item.type === 'INCOME',
+                    numberLocale,
+                  )}
                 </td>
               </tr>
             ))}
@@ -255,25 +290,39 @@ function Transactions({ data }: { data: DashboardData }) {
               <div className="min-w-0">
                 <p className="truncate font-medium">{item.description}</p>
                 <p className="mt-0.5 text-sm text-[var(--muted-foreground)]">
-                  {dateLabel(item.occurredOn)} · {item.category.name}
+                  {dateLabel(item.occurredOn, numberLocale)} · {item.category.name}
                 </p>
               </div>
             </div>
             <p
               className={`shrink-0 font-medium tabular-nums ${item.type === 'INCOME' ? 'text-[var(--income)]' : 'text-[var(--expense)]'}`}
             >
-              {formatMoney(item.amount, data.currency, item.type === 'INCOME')}
+              {formatMoney(
+                item.amount,
+                data.currency,
+                item.type === 'INCOME',
+                numberLocale,
+              )}
             </p>
           </li>
         ))}
       </ul>
+      <div className="border-t border-[var(--border)] p-4 md:hidden">
+        <Link
+          className="inline-flex min-h-11 items-center text-sm font-medium underline decoration-[var(--border)] underline-offset-4 hover:decoration-current"
+          href="/transactions"
+        >
+          {t('viewAllTransactions')}
+        </Link>
+      </div>
     </section>
   );
 }
 function Loading() {
+  const { t } = useDashboardIntl();
   return (
     <div aria-busy="true" aria-live="polite" className="animate-pulse space-y-6">
-      <p className="sr-only">Loading financial summary.</p>
+      <p className="sr-only">{t('loadingSummary')}</p>
       <div className="h-40 rounded-xl bg-[var(--surface)]" />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="h-80 rounded-xl bg-[var(--surface)] lg:col-span-2" />
@@ -284,21 +333,16 @@ function Loading() {
   );
 }
 function Notice({ kind, onRetry }: { kind: 'empty' | 'error'; onRetry: () => void }) {
+  const { t } = useDashboardIntl();
   const error = kind === 'error';
   return (
     <section
       aria-live="polite"
       className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-6 py-16 text-center"
     >
-      <h2 className="text-xl font-medium">
-        {error
-          ? 'We could not load your financial summary.'
-          : 'Information has not been provided yet.'}
-      </h2>
+      <h2 className="text-xl font-medium">{error ? t('errorTitle') : t('emptyTitle')}</h2>
       <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[var(--muted-foreground)]">
-        {error
-          ? 'Check your connection and try again.'
-          : 'Once you record transactions, this period’s summary will appear here.'}
+        {error ? t('errorDescription') : t('emptyDescription')}
       </p>
       {error && (
         <button
@@ -306,14 +350,23 @@ function Notice({ kind, onRetry }: { kind: 'empty' | 'error'; onRetry: () => voi
           onClick={onRetry}
           type="button"
         >
-          Reintentar
+          {t('retry')}
         </button>
+      )}
+      {!error && (
+        <Link
+          className="mt-6 inline-flex min-h-11 items-center rounded-lg bg-[var(--primary)] px-4 text-sm font-medium text-[var(--primary-foreground)]"
+          href="/transactions/new"
+        >
+          {t('emptyAction')}
+        </Link>
       )}
     </section>
   );
 }
 
 export function DashboardClient() {
+  const { t, numberLocale } = useDashboardIntl();
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -330,13 +383,15 @@ export function DashboardClient() {
   const request = useMemo(() => ({ month, currency }), [month, currency]);
   useEffect(() => {
     if (currencyParam) return;
-    void getDefaultCurrency().then((preferredCurrency) => {
-      if (preferredCurrency !== currency) {
-        const next = new URLSearchParams(params.toString());
-        next.set('currency', preferredCurrency);
-        router.replace(`${pathname}?${next.toString()}`, { scroll: false });
-      }
-    }).catch(() => undefined);
+    void getDefaultCurrency()
+      .then((preferredCurrency) => {
+        if (preferredCurrency !== currency) {
+          const next = new URLSearchParams(params.toString());
+          next.set('currency', preferredCurrency);
+          router.replace(`${pathname}?${next.toString()}`, { scroll: false });
+        }
+      })
+      .catch(() => undefined);
   }, [currency, currencyParam, params, pathname, router]);
   useEffect(() => {
     let active = true;
@@ -354,7 +409,11 @@ export function DashboardClient() {
       .then((result) => {
         if (!active) return;
         setData(result);
-        setState(fixture === 'empty' || result.recentTransactions.length === 0 ? 'empty' : 'populated');
+        setState(
+          fixture === 'empty' || result.recentTransactions.length === 0
+            ? 'empty'
+            : 'populated',
+        );
       })
       .catch(() => active && setState('error'));
     return () => {
@@ -372,9 +431,6 @@ export function DashboardClient() {
       <header className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-sm">
         <div className="mx-auto flex min-h-16 max-w-[1200px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-10">
           <div className="flex items-center gap-3">
-            <span className="md:hidden">
-              <Icon name="menu" />
-            </span>
             <h1 className="text-xl font-semibold tracking-[-0.03em] sm:text-2xl">
               <Link className="rounded-sm hover:text-[var(--primary)]" href="/dashboard">
                 CashTracker
@@ -383,7 +439,7 @@ export function DashboardClient() {
           </div>
           <div className="flex items-center gap-2">
             <label className="sr-only" htmlFor="dashboard-month">
-              Month
+              {t('month')}
             </label>
             <select
               className="h-11 max-w-40 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--foreground)]"
@@ -393,12 +449,12 @@ export function DashboardClient() {
             >
               {months.map((item) => (
                 <option key={item} value={item}>
-                  {monthLabel(item)}
+                  {monthLabel(item, numberLocale)}
                 </option>
               ))}
             </select>
             <label className="sr-only" htmlFor="dashboard-currency">
-              Currency
+              {t('currency')}
             </label>
             <select
               className="h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-medium text-[var(--foreground)]"
@@ -413,8 +469,19 @@ export function DashboardClient() {
         </div>
       </header>
       <main className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10">
-        <p className="mb-6 text-sm text-[var(--muted-foreground)]">
-          {monthLabel(month)} · {currency}
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--muted-foreground)]">
+          <p>
+            {monthLabel(month, numberLocale)} · {currency}
+          </p>
+          <Link
+            className="hidden min-h-11 items-center rounded-lg bg-[var(--primary)] px-4 font-medium text-[var(--primary-foreground)] sm:inline-flex"
+            href="/transactions/new"
+          >
+            {t('addTransaction')}
+          </Link>
+        </div>
+        <p className="mb-6 max-w-xl text-sm leading-6 text-[var(--muted-foreground)]">
+          {t('currencyHint')}
         </p>
         {state === 'loading' ? (
           <Loading />

@@ -19,18 +19,23 @@ export function sumAmounts(values: string[]): string {
 export function subtractAmounts(left: string, right: string): string {
   return fromCents(toCents(left) - toCents(right));
 }
-export function formatMoney(value: string, currency: string, signed = false): string {
+export function formatMoney(
+  value: string,
+  currency: string,
+  signed = false,
+  locale = 'es-PE',
+): string {
   const zero = BigInt(0);
   const hundred = BigInt(100);
   const cents = toCents(value);
   const absolute = cents < zero ? -cents : cents;
   const whole = absolute / hundred;
   const decimal = String(absolute % hundred).padStart(2, '0');
-  const number = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 0 }).format(
+  const number = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(
     whole,
   );
   const currencyPart =
-    new Intl.NumberFormat('es-PE', {
+    new Intl.NumberFormat(locale, {
       style: 'currency',
       currency,
       currencyDisplay: 'symbol',
