@@ -32,6 +32,7 @@ async function bootstrap() {
         .setTitle('CashTracker API')
         .setDescription('REST API for CashTracker.')
         .setVersion('0.1.0')
+        .addBearerAuth()
         .build(),
     );
     SwaggerModule.setup('api/docs', app, document);

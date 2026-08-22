@@ -33,5 +33,5 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     () => ({ locale, setLanguage: (language: Language) => setLocale(language === 'ES' ? 'es' : 'en') }),
     [locale],
   );
-  return <LocaleContext.Provider value={value}><NextIntlClientProvider locale={locale} messages={messages[locale]}>{children}</NextIntlClientProvider></LocaleContext.Provider>;
+  return <LocaleContext.Provider value={value}><NextIntlClientProvider locale={locale} messages={messages[locale]} timeZone="America/Lima">{children}</NextIntlClientProvider></LocaleContext.Provider>;
 }
