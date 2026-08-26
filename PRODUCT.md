@@ -1,29 +1,50 @@
 # CashTracker product brief
 
-## Platform and stack
+## Purpose
 
-CashTracker is a responsive, mobile-first personal finance web application. Its foundation uses a pnpm/Turborepo monorepo, a Next.js App Router frontend, a NestJS REST API, PostgreSQL in Docker Compose, Tailwind CSS v4, and CSS variables for design tokens and theming.
+CashTracker helps independent professionals understand their income, expenses, recurring
+commitments, and remaining monthly balance without the density of a traditional
+accounting or banking product.
 
-## Users and purpose
+## Target users
 
-It is for independent professionals with fixed income, freelance income, recurring expenses, and variable expenses. The product helps them understand their monthly income, expenses, and remaining balance quickly.
+The primary users combine fixed or freelance income with recurring and variable
+expenses. They need a quick, calm view of the month and a low-friction way to record
+financial activity.
 
-## Operating context
+## Product goals
 
-The product is Spanish-first and prepared for future internationalization. It supports light and dark themes. The initial currencies are PEN and USD; totals must never combine them without an explicit exchange-rate feature.
+- Make the current month's financial position easy to understand.
+- Make recording an income or expense fast on mobile and desktop.
+- Keep the experience minimal, calm, personal, and human.
+- Provide a Spanish-first interface prepared for internationalization.
+- Support accessible interaction, WCAG AA contrast, and generous mobile touch targets.
+- Support light and dark appearance preferences.
 
-## Intended capabilities
+## MVP capabilities
 
-The application includes authentication, PostgreSQL/Prisma-backed categories and transactions, and recurring income and expense rules. A recurring rule is a schedule; it affects financial totals only after it creates a linked actual transaction. The REST API exposes OpenAPI documentation outside production.
+- Account registration, sign-in, session restoration, sign-out, and password changes.
+- User-owned income and expense categories.
+- Income and expense recording, editing, filtering, and deletion.
+- Monthly dashboard summaries separated by currency.
+- Recurring income and expense schedules, including an option to record an occurrence.
+- Profile, currency, language, timezone, category, and security settings.
 
-## Constraints and future scope
+## MVP non-goals
 
-S3 uploads, bank accounts, wallets, transfers, exchange rates, and a background scheduler are future scope. The recurrence processor is deliberately callable from a future worker; no automatic scheduler is introduced until the project has an established job runtime.
+- Bank integrations
+- Accounts or wallet abstractions
+- Transfers between accounts
+- Automatic exchange-rate conversion or mixed-currency totals
+- Automatic background scheduling of recurring occurrences
+- Receipt or attachment storage
+- S3 integration
 
-## Product principles
+## Future scope
 
-The experience should be minimal, calm, human, and easy to use. It should not resemble a corporate banking or accounting product.
+Future work may add exchange-rate support, attachment storage, bank or account models,
+and a background job runtime. These are not current product capabilities.
 
-## Accessibility
-
-The application targets WCAG AA, semantic and keyboard-accessible interaction, visible focus states, and generously sized touch targets on mobile.
+Technology-independent financial rules are documented in
+[docs/domain.md](docs/domain.md). Implementation details are documented in
+[docs/architecture.md](docs/architecture.md).

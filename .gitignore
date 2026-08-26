@@ -9,8 +9,7 @@ coverage/
 
 # Environment files and local database state
 .env
-.env.local
-.env.*.local
+.env.*
 !.env.example
 infra/docker/.env
 
@@ -20,5 +19,6 @@ infra/docker/.env
 .vscode/
 *.log
 
-# Local design references and documentation
-docs/
+# Generated design and audit artifacts
+docs/design/references/
+.impeccable/
