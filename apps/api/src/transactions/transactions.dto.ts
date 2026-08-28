@@ -26,6 +26,7 @@ export class CreateTransactionDto {
   @Matches(/\S/, { message: 'Description is required.' })
   description!: string;
   @IsUUID() categoryId!: string;
+  @IsOptional() @IsUUID() creditCardId?: string;
   @Matches(/^\d{4}-\d{2}-\d{2}$/, { message: 'The date is invalid.' })
   occurredOn!: string;
   @IsOptional()

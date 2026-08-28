@@ -56,6 +56,13 @@ invariants that Prisma does not represent are enforced by explicit PostgreSQL ch
 constraints. See [domain.md](domain.md) and
 [001-enforce-domain-invariants-in-postgresql.md](decisions/001-enforce-domain-invariants-in-postgresql.md).
 
+The persistence model includes user-owned credit cards and credit-card payments. Existing
+transactions may optionally reference a credit card; deleting a card sets that reference
+to null, preserving transaction history. Credit-card and payment amounts use the same
+`DECIMAL(19,4)` representation, and payment dates use PostgreSQL `DATE` values.
+Credit-card statements are materialized lazily on card reads after a closing date; payment
+applications preserve oldest-statement-first allocation without requiring a scheduler.
+
 ### Local infrastructure
 
 `infra/docker/docker-compose.yml` defines the local PostgreSQL service and its persistent

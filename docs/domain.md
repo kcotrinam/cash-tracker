@@ -5,10 +5,13 @@ framework or persistence technology used to implement CashTracker.
 
 ## Ownership and relationships
 
-- A user owns their settings, categories, transactions, and recurring transactions.
+- A user owns their settings, categories, transactions, recurring transactions, credit
+  cards, and credit-card payments.
 - Every category belongs to exactly one user.
 - Every transaction belongs to exactly one user and one category.
 - Every recurring transaction belongs to exactly one user and one category.
+- Every credit card belongs to exactly one user.
+- Every credit-card payment belongs to exactly one user and one credit card.
 - A user may only read or modify their own financial data.
 
 ## Transaction direction and categories
@@ -26,6 +29,11 @@ framework or persistence technology used to implement CashTracker.
 
 - Amounts are exact decimal values, never floating-point approximations.
 - Transaction and recurring amounts must be greater than zero and may have at most four
+  decimal places.
+- Credit-card limits and balances use exact decimals with at most four decimal places.
+- A credit-card limit must be greater than zero; its initial balance must be zero or
+  greater.
+- A credit-card payment amount must be greater than zero and may have at most four
   decimal places.
 - The supported currencies are `PEN` and `USD`.
 - Totals must never combine currencies without an explicit exchange-rate operation.
@@ -49,6 +57,27 @@ framework or persistence technology used to implement CashTracker.
 - A transaction affects financial totals in the month containing its occurrence date.
 - Changing a transaction's direction requires a category compatible with the new
   direction.
+- An expense transaction may optionally reference an active credit card owned by the
+  same user in the same currency. Income transactions cannot reference a credit card.
+- Deleting a credit card preserves its historical transactions and clears their card
+  reference.
+
+## Credit cards and payments
+
+- A credit card has a visible name, one supported currency, a positive credit limit,
+  an initial balance, monthly closing day, monthly payment day, and active status.
+- Closing and payment days must each be calendar days from 1 through 31.
+- The initial balance represents existing debt before using CashTracker; it defaults to
+  zero.
+- A credit-card payment records a positive amount, currency, payment date, and optional
+  note. Payment dates are financial dates without a time of day.
+- A payment's currency must match its credit card's currency.
+- Interest, installments, fees, exchange rates, and automatic background closing are
+  outside the current scope.
+- A statement is created lazily for a completed closing cycle and snapshots its balance,
+  due date, optional bank-provided minimum payment, and remaining amount.
+- A card payment is allocated to the oldest outstanding statement first. It reduces card
+  debt and statement balance but is never a second expense.
 
 ## Recurring transactions
 

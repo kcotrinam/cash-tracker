@@ -112,6 +112,82 @@ function Summary({ data }: { data: DashboardData }) {
           )}
         </p>
       </article>
+      {data.summary.cardPaymentsDue !== '0' && (
+        <article className="rounded-xl border border-[var(--border)] bg-[var(--surface-low)] p-5 sm:col-span-2">
+          <p className="text-sm font-medium text-[var(--muted-foreground)]">
+            Disponible después de pagar tarjetas
+          </p>
+          <p className="mt-3 text-2xl font-medium tabular-nums">
+            {formatMoney(
+              data.summary.availableAfterCardPayments,
+              data.currency,
+              false,
+              numberLocale,
+            )}
+          </p>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            Incluye{' '}
+            {formatMoney(
+              data.summary.cardPaymentsDue,
+              data.currency,
+              false,
+              numberLocale,
+            )}{' '}
+            con vencimiento este mes.
+          </p>
+        </article>
+      )}
+    </section>
+  );
+}
+function CreditCardPayments({ data }: { data: DashboardData }) {
+  const { numberLocale } = useDashboardIntl();
+  if (!data.creditCards.length) return null;
+  return (
+    <section
+      aria-labelledby="card-payments-heading"
+      className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6"
+    >
+      <div className="flex items-baseline justify-between gap-4">
+        <div>
+          <h2
+            id="card-payments-heading"
+            className="text-lg font-medium tracking-[-0.02em]"
+          >
+            Tarjetas de crédito
+          </h2>
+          <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+            Crédito disponible y próximos pagos.
+          </p>
+        </div>
+        <Link
+          className="text-sm underline underline-offset-4"
+          href="/settings/credit-cards"
+        >
+          Ver tarjetas
+        </Link>
+      </div>
+      <ul className="mt-5 divide-y divide-[var(--border)]">
+        {data.creditCards.map((card) => (
+          <li className="flex items-center justify-between gap-4 py-3" key={card.id}>
+            <span>
+              <strong className="block">{card.name}</strong>
+              <span className="mt-1 block text-sm text-[var(--muted-foreground)]">
+                {card.dueOn ? `Vence ${card.dueOn}` : 'Sin estado de cuenta cerrado'}
+              </span>
+            </span>
+            <span className="text-right">
+              <strong className="block tabular-nums">
+                {formatMoney(card.availableCredit, data.currency, false, numberLocale)}
+              </strong>
+              <span className="mt-1 block text-sm text-[var(--muted-foreground)]">
+                Disponible de{' '}
+                {formatMoney(card.creditLimit, data.currency, false, numberLocale)}
+              </span>
+            </span>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -499,6 +575,7 @@ export function DashboardClient() {
           data && (
             <div className="space-y-6">
               <Summary data={data} />
+              <CreditCardPayments data={data} />
               <div className="grid gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2">
                   <Spending data={data} />

@@ -13,9 +13,11 @@ constraints in its schema.
 ## Decision
 
 Enforce invariants that must hold independently of the API with explicit PostgreSQL
-check constraints committed in Prisma migrations. The current constraints require
-positive transaction and recurring amounts, positive recurrence intervals, valid
-monthly anchor days, and end dates that do not precede start dates.
+check constraints committed in Prisma migrations. The current constraints require positive
+transaction, recurring-transaction, credit-card-limit, and credit-card-payment amounts;
+nonnegative credit-card initial balances; positive recurrence intervals; valid monthly
+anchor, credit-card closing, and credit-card payment days; and end dates that do not
+precede start dates.
 
 ## Consequences
 

@@ -6,7 +6,12 @@ import {
 } from '@nestjs/common';
 import { CurrencyCode, Prisma, TransactionType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateTransactionDto, ListTransactionsDto, UpdateTransactionDto } from './transactions.dto';
+import { CreditCardsService } from '../credit-cards/credit-cards.service';
+import {
+  CreateTransactionDto,
+  ListTransactionsDto,
+  UpdateTransactionDto,
+} from './transactions.dto';
 
 const categorySelect = {
   id: true,
@@ -47,7 +52,10 @@ function serialize(transaction: {
 
 @Injectable()
 export class TransactionsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly creditCards: CreditCardsService,
+  ) {}
 
   async create(userId: string, dto: CreateTransactionDto) {
     const amount = new Prisma.Decimal(dto.amount.replace(',', '.'));
@@ -64,6 +72,11 @@ export class TransactionsService {
       throw new ForbiddenException('You cannot use this category.');
     if (!category.isActive || category.type !== dto.type)
       throw new BadRequestException('The category does not match the transaction type.');
+    if (dto.creditCardId) {
+      if (dto.type !== TransactionType.EXPENSE)
+        throw new BadRequestException('Only expenses can use a credit card.');
+      await this.creditCards.assertUsable(userId, dto.creditCardId, dto.currencyCode);
+    }
     const transaction = await this.prisma.transaction.create({
       data: {
         userId,
@@ -74,6 +87,7 @@ export class TransactionsService {
         description: dto.description,
         note: dto.note || null,
         occurredOn: dateOnly(dto.occurredOn),
+        creditCardId: dto.creditCardId || null,
       },
       include: { category: { select: categorySelect } },
     });
@@ -135,7 +149,14 @@ export class TransactionsService {
       if (category.userId !== userId)
         throw new ForbiddenException('You cannot use this category.');
       if (!category.isActive || category.type !== dto.type)
-        throw new BadRequestException('The category does not match the transaction type.');
+        throw new BadRequestException(
+          'The category does not match the transaction type.',
+        );
+    }
+    if (dto.creditCardId) {
+      if (dto.type !== TransactionType.EXPENSE)
+        throw new BadRequestException('Only expenses can use a credit card.');
+      await this.creditCards.assertUsable(userId, dto.creditCardId, dto.currencyCode);
     }
     const transaction = await this.prisma.transaction.update({
       where: { id },
@@ -147,6 +168,7 @@ export class TransactionsService {
         categoryId: dto.categoryId,
         occurredOn: dateOnly(dto.occurredOn),
         note: dto.note || null,
+        creditCardId: dto.creditCardId || null,
       },
       include: { category: { select: categorySelect } },
     });
@@ -155,6 +177,7 @@ export class TransactionsService {
 
   async remove(userId: string, id: string) {
     const result = await this.prisma.transaction.deleteMany({ where: { id, userId } });
-    if (result.count !== 1) throw new NotFoundException('The transaction does not exist.');
+    if (result.count !== 1)
+      throw new NotFoundException('The transaction does not exist.');
   }
 }

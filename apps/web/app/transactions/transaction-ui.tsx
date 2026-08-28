@@ -17,6 +17,7 @@ type Category = {
   isDefault: boolean;
   isActive: boolean;
 };
+type CreditCard = { id: string; name: string; currency: Currency; isActive: boolean };
 type Item = {
   id: string;
   type: Type;
@@ -153,12 +154,18 @@ export function NewTransaction() {
     categoryId: '',
     occurredOn: today,
     note: '',
+    creditCardId: '',
   });
+  const [creditCards, setCreditCards] = useState<CreditCard[]>([]);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [categoryQuery, setCategoryQuery] = useState('');
   const [creatingCategory, setCreatingCategory] = useState(false);
-  useEffect(() => { void getDefaultCurrency().then((currencyCode) => setForm((value) => ({ ...value, currencyCode }))).catch(() => undefined); }, []);
+  useEffect(() => {
+    void getDefaultCurrency()
+      .then((currencyCode) => setForm((value) => ({ ...value, currencyCode })))
+      .catch(() => undefined);
+  }, []);
   useEffect(() => {
     const controller = new AbortController();
     const search = categoryQuery.trim()
@@ -178,6 +185,13 @@ export function NewTransaction() {
       });
     return () => controller.abort();
   }, [type, categoryQuery]);
+  useEffect(() => {
+    if (type !== 'EXPENSE') return;
+    authenticatedFetch(`${api}/credit-cards`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((cards) => setCreditCards(Array.isArray(cards) ? cards : []))
+      .catch(() => setCreditCards([]));
+  }, [type]);
   function change(name: keyof typeof form, value: string) {
     setForm((v) => ({ ...v, [name]: value }));
     setError('');
@@ -186,6 +200,7 @@ export function NewTransaction() {
     setType(nextType);
     setCategoryQuery('');
     change('categoryId', '');
+    if (nextType === 'INCOME') change('creditCardId', '');
   }
   async function createCategory() {
     const name = categoryQuery.trim();
@@ -308,6 +323,32 @@ export function NewTransaction() {
                 value={form.description}
               />
             </label>
+            {type === 'EXPENSE' && (
+              <fieldset>
+                <legend className="text-sm font-medium">Método de pago</legend>
+                <select
+                  className={input}
+                  onChange={(e) => change('creditCardId', e.target.value)}
+                  value={form.creditCardId}
+                >
+                  <option value="">Sin tarjeta</option>
+                  {creditCards
+                    .filter(
+                      (card) => card.isActive && card.currency === form.currencyCode,
+                    )
+                    .map((card) => (
+                      <option key={card.id} value={card.id}>
+                        Tarjeta de crédito · {card.name}
+                      </option>
+                    ))}
+                </select>
+                {form.creditCardId && (
+                  <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+                    Esta compra se sumará al saldo pendiente de la tarjeta.
+                  </p>
+                )}
+              </fieldset>
+            )}
             <div className="grid gap-7 sm:grid-cols-2">
               <div className="text-sm font-medium">
                 <label htmlFor="transaction-category">Categoría</label>
@@ -936,7 +977,7 @@ function TransactionActionsMenu({
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={`Acciones para ${item.description}`}
-      className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg text-[var(--muted-foreground)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+        className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg text-[var(--muted-foreground)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
         onClick={() => onOpenChange(!open)}
         type="button"
       >
@@ -953,7 +994,7 @@ function TransactionActionsMenu({
           role="menu"
         >
           <button
-          className="flex min-h-10 w-full cursor-pointer items-center gap-2 px-2 text-left text-sm hover:bg-[#343a41]"
+            className="flex min-h-10 w-full cursor-pointer items-center gap-2 px-2 text-left text-sm hover:bg-[#343a41]"
             onClick={onEdit}
             role="menuitem"
             type="button"
@@ -972,7 +1013,7 @@ function TransactionActionsMenu({
             Editar
           </button>
           <button
-          className="flex min-h-10 w-full cursor-pointer items-center gap-2 px-2 text-left text-sm text-[var(--expense)] hover:bg-[#4a292c]"
+            className="flex min-h-10 w-full cursor-pointer items-center gap-2 px-2 text-left text-sm text-[var(--expense)] hover:bg-[#4a292c]"
             onClick={onDelete}
             role="menuitem"
             type="button"
