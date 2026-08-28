@@ -7,7 +7,8 @@ import { authenticatedFetch, getApiUrl } from '../authenticated-fetch';
 import { AppShell } from '../components/app-shell';
 import { useAppLocale } from '../locale-provider';
 
-type Section = 'overview' | 'profile' | 'preferences' | 'categories' | 'security';
+type Section =
+  'overview' | 'profile' | 'preferences' | 'categories' | 'security' | 'credit-cards';
 type Currency = 'PEN' | 'USD';
 type Language = 'EN' | 'ES';
 type CategoryType = 'INCOME' | 'EXPENSE';
@@ -34,6 +35,11 @@ const sections: {
   { id: 'preferences', label: 'Preferences', description: 'Currency and time zone' },
   { id: 'categories', label: 'Categories', description: 'Organize income and expenses' },
   { id: 'security', label: 'Security', description: 'Change your password' },
+  {
+    id: 'credit-cards',
+    label: 'Credit cards',
+    description: 'Cards, statements and payments',
+  },
 ];
 
 function messageFrom(response: Response, fallback: string) {
@@ -282,7 +288,9 @@ function PreferencesForm() {
         <select
           className={input}
           id="language"
-          onChange={(e) => setPreferences((v) => ({ ...v, language: e.target.value as Language }))}
+          onChange={(e) =>
+            setPreferences((v) => ({ ...v, language: e.target.value as Language }))
+          }
           value={preferences.language}
         >
           <option value="EN">{t('english')}</option>
@@ -337,7 +345,8 @@ function CategoriesForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: draft, type }),
       });
-      if (!r.ok) throw new Error(await messageFrom(r, 'We could not create the category.'));
+      if (!r.ok)
+        throw new Error(await messageFrom(r, 'We could not create the category.'));
       setDraft('');
       await load();
     } catch (e) {
@@ -355,7 +364,8 @@ function CategoriesForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name }),
       });
-      if (!r.ok) throw new Error(await messageFrom(r, 'We could not rename the category.'));
+      if (!r.ok)
+        throw new Error(await messageFrom(r, 'We could not rename the category.'));
       setEditing(null);
       await load();
     } catch (e) {

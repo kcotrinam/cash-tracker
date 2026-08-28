@@ -39,6 +39,12 @@ enum AppLanguage {
   ES
 }
 
+enum CreditCardStatementStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
 model User {
   id                    String                 @id @default(uuid()) @db.Uuid
   email                 String                 @unique
@@ -51,6 +57,9 @@ model User {
   categories            Category[]
   transactions          Transaction[]
   recurringTransactions RecurringTransaction[]
+  creditCards           CreditCard[]
+  creditCardPayments    CreditCardPayment[]
+  creditCardStatements  CreditCardStatement[]
 }
 
 model RefreshSession {
@@ -105,6 +114,7 @@ model Transaction {
   userId                 String                @db.Uuid
   categoryId             String                @db.Uuid
   recurringTransactionId String?               @db.Uuid
+  creditCardId           String?               @db.Uuid
   type                   TransactionType
   amount                 Decimal               @db.Decimal(19, 4)
   currencyCode           CurrencyCode
@@ -116,10 +126,84 @@ model Transaction {
   user                   User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   category               Category              @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   recurringTransaction   RecurringTransaction? @relation("RecordedOccurrences", fields: [recurringTransactionId], references: [id], onDelete: SetNull)
+  creditCard             CreditCard?           @relation(fields: [creditCardId], references: [id], onDelete: SetNull)
 
   @@unique([recurringTransactionId, occurredOn])
   @@index([userId, occurredOn, type, currencyCode])
   @@index([categoryId])
+  @@index([creditCardId, occurredOn])
+}
+
+model CreditCard {
+  id             String              @id @default(uuid()) @db.Uuid
+  userId         String              @db.Uuid
+  name           String
+  currency       CurrencyCode
+  creditLimit    Decimal             @db.Decimal(19, 4)
+  initialBalance Decimal             @default(0) @db.Decimal(19, 4)
+  closingDay     Int
+  paymentDay     Int
+  isActive       Boolean             @default(true)
+  createdAt      DateTime            @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime            @updatedAt @db.Timestamptz(6)
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions   Transaction[]
+  payments       CreditCardPayment[]
+  statements     CreditCardStatement[]
+
+  @@index([userId, currency, isActive])
+}
+
+model CreditCardPayment {
+  id           String       @id @default(uuid()) @db.Uuid
+  userId       String       @db.Uuid
+  creditCardId String       @db.Uuid
+  amount       Decimal      @db.Decimal(19, 4)
+  currency     CurrencyCode
+  paidOn       DateTime     @db.Date
+  note         String?
+  createdAt    DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime     @updatedAt @db.Timestamptz(6)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creditCard   CreditCard   @relation(fields: [creditCardId], references: [id], onDelete: Cascade)
+  applications CreditCardPaymentApplication[]
+
+  @@index([userId, paidOn, currency])
+  @@index([creditCardId, paidOn])
+}
+
+model CreditCardStatement {
+  id               String                    @id @default(uuid()) @db.Uuid
+  userId           String                    @db.Uuid
+  creditCardId     String                    @db.Uuid
+  periodStart      DateTime                  @db.Date
+  closedOn         DateTime                  @db.Date
+  dueOn            DateTime                  @db.Date
+  statementBalance Decimal                   @db.Decimal(19, 4)
+  minimumPayment   Decimal?                  @db.Decimal(19, 4)
+  remainingBalance Decimal                   @db.Decimal(19, 4)
+  status           CreditCardStatementStatus @default(PENDING)
+  createdAt        DateTime                  @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime                  @updatedAt @db.Timestamptz(6)
+  user             User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creditCard       CreditCard                @relation(fields: [creditCardId], references: [id], onDelete: Cascade)
+  applications     CreditCardPaymentApplication[]
+
+  @@unique([creditCardId, closedOn])
+  @@index([userId, dueOn, status])
+}
+
+model CreditCardPaymentApplication {
+  id           String              @id @default(uuid()) @db.Uuid
+  paymentId    String              @db.Uuid
+  statementId  String              @db.Uuid
+  amount       Decimal             @db.Decimal(19, 4)
+  createdAt    DateTime            @default(now()) @db.Timestamptz(6)
+  payment      CreditCardPayment   @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  statement    CreditCardStatement @relation(fields: [statementId], references: [id], onDelete: Cascade)
+
+  @@unique([paymentId, statementId])
+  @@index([statementId])
 }
 
 model RecurringTransaction {

@@ -5,7 +5,13 @@ export type PeriodStatus = 'PENDING' | 'RECORDED' | 'INACTIVE';
 export type DashboardData = {
   month: string;
   currency: CurrencyCode;
-  summary: { income: string; expenses: string; netBalance: string };
+  summary: {
+    income: string;
+    expenses: string;
+    netBalance: string;
+    cardPaymentsDue: string;
+    availableAfterCardPayments: string;
+  };
   spendingByCategory: Array<{
     categoryId: string;
     categoryName: string;
@@ -31,6 +37,14 @@ export type DashboardData = {
     scheduledOn: string;
     periodStatus: PeriodStatus;
     recordedTransactionId?: string;
+  }>;
+  creditCards: Array<{
+    id: string;
+    name: string;
+    outstandingBalance: string;
+    dueOn?: string;
+    statementBalance?: string;
+    minimumPayment?: string | null;
   }>;
 };
 
