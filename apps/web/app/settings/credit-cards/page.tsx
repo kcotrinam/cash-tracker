@@ -105,7 +105,8 @@ export default function CreditCardsPage() {
   async function pay(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!selected) return;
-    const values = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const values = new FormData(form);
     const r = await authenticatedFetch(`${api}/credit-cards/${selected.id}/payments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -118,7 +119,7 @@ export default function CreditCardsPage() {
     if (!r.ok) return setError('No pudimos registrar el pago.');
     await open(selected.id);
     load();
-    event.currentTarget.reset();
+    form.reset();
   }
   return (
     <AppShell active="settings" screenClassName="settings-screen">
