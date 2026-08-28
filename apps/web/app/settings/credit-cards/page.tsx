@@ -46,6 +46,12 @@ const input =
   'mt-2 h-12 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 outline-none focus:ring-1 focus:ring-[var(--focus-ring)]';
 const format = (value: string, currency: Currency) =>
   new Intl.NumberFormat('es-PE', { style: 'currency', currency }).format(Number(value));
+const formatDate = (value: string) =>
+  new Intl.DateTimeFormat('es-PE', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(new Date(`${value.slice(0, 10)}T12:00:00`));
 
 export default function CreditCardsPage() {
   const [cards, setCards] = useState<Card[] | null>(null);
@@ -267,7 +273,7 @@ export default function CreditCardsPage() {
                       <span>
                         {item.description}
                         <small className="ml-2 text-[var(--muted-foreground)]">
-                          {item.detail}
+                          {item.detail} · {formatDate(item.date)}
                         </small>
                       </span>
                       <strong
