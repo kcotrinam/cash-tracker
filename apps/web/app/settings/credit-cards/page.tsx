@@ -121,6 +121,26 @@ export default function CreditCardsPage() {
     load();
     form.reset();
   }
+  const movements = selected
+    ? [
+        ...selected.transactions.map((item) => ({
+          id: `expense-${item.id}`,
+          date: item.occurredOn,
+          description: item.description,
+          detail: item.category.name,
+          amount: item.amount,
+          kind: 'EXPENSE' as const,
+        })),
+        ...selected.payments.map((payment) => ({
+          id: `payment-${payment.id}`,
+          date: payment.paidOn,
+          description: 'Abono a tarjeta',
+          detail: 'Pago registrado',
+          amount: payment.amount,
+          kind: 'PAYMENT' as const,
+        })),
+      ].sort((a, b) => b.date.localeCompare(a.date))
+    : [];
   return (
     <AppShell active="settings" screenClassName="settings-screen">
       <main className="mx-auto max-w-6xl px-4 py-7 md:px-8 md:py-10 lg:px-12">
@@ -240,17 +260,20 @@ export default function CreditCardsPage() {
                     </button>
                   </form>
                 </div>
-                <h3 className="mt-10 font-medium">Compras recientes</h3>
+                <h3 className="mt-10 font-medium">Movimientos recientes</h3>
                 <ul className="mt-3 divide-y divide-[var(--border)]">
-                  {selected.transactions.map((item) => (
+                  {movements.map((item) => (
                     <li className="flex justify-between gap-4 py-3" key={item.id}>
                       <span>
                         {item.description}
                         <small className="ml-2 text-[var(--muted-foreground)]">
-                          {item.category.name}
+                          {item.detail}
                         </small>
                       </span>
-                      <strong className="tabular-nums">
+                      <strong
+                        className={`tabular-nums ${item.kind === 'EXPENSE' ? 'text-[#e3aaa2]' : 'text-[#a9c6ad]'}`}
+                      >
+                        {item.kind === 'EXPENSE' ? '−' : '+'}
                         {format(item.amount, selected.currency)}
                       </strong>
                     </li>
