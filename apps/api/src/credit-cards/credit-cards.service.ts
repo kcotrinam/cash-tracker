@@ -197,7 +197,7 @@ export class CreditCardsService {
       this.summary(userId, id),
       this.prisma.creditCardPayment.findMany({
         where: { userId, creditCardId: id },
-        orderBy: { paidOn: 'desc' },
+        orderBy: [{ paidOn: 'desc' }, { createdAt: 'desc' }],
       }),
       this.prisma.creditCardStatement.findMany({
         where: { userId, creditCardId: id },
@@ -205,7 +205,7 @@ export class CreditCardsService {
       }),
       this.prisma.transaction.findMany({
         where: { userId, creditCardId: id },
-        orderBy: { occurredOn: 'desc' },
+        orderBy: [{ occurredOn: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
         take: 30,
         include: { category: { select: { id: true, name: true } } },
       }),

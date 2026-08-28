@@ -25,7 +25,7 @@ type Card = {
   } | null;
 };
 type Detail = Card & {
-  payments: { id: string; amount: string; paidOn: string }[];
+  payments: { id: string; amount: string; paidOn: string; createdAt: string }[];
   statements: {
     id: string;
     dueOn: string;
@@ -38,6 +38,7 @@ type Detail = Card & {
     description: string;
     amount: string;
     occurredOn: string;
+    createdAt: string;
     category: { name: string };
   }[];
 };
@@ -132,6 +133,7 @@ export default function CreditCardsPage() {
         ...selected.transactions.map((item) => ({
           id: `expense-${item.id}`,
           date: item.occurredOn,
+          recordedAt: item.createdAt,
           description: item.description,
           detail: item.category.name,
           amount: item.amount,
@@ -140,12 +142,16 @@ export default function CreditCardsPage() {
         ...selected.payments.map((payment) => ({
           id: `payment-${payment.id}`,
           date: payment.paidOn,
+          recordedAt: payment.createdAt,
           description: 'Abono a tarjeta',
           detail: 'Pago registrado',
           amount: payment.amount,
           kind: 'PAYMENT' as const,
         })),
-      ].sort((a, b) => b.date.localeCompare(a.date))
+      ].sort(
+        (a, b) =>
+          b.date.localeCompare(a.date) || b.recordedAt.localeCompare(a.recordedAt),
+      )
     : [];
   return (
     <AppShell active="settings" screenClassName="settings-screen">
