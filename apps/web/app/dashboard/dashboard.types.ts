@@ -41,7 +41,9 @@ export type DashboardData = {
   creditCards: Array<{
     id: string;
     name: string;
+    creditLimit: string;
     outstandingBalance: string;
+    availableCredit: string;
     dueOn?: string;
     statementBalance?: string;
     minimumPayment?: string | null;

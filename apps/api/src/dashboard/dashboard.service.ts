@@ -166,7 +166,9 @@ export class DashboardService {
         return {
           id: card.id,
           name: card.name,
+          creditLimit: amount(card.creditLimit),
           outstandingBalance: amount(Prisma.Decimal.max(debt, 0)),
+          availableCredit: amount(Prisma.Decimal.max(card.creditLimit.minus(debt), 0)),
           ...(statement
             ? {
                 dueOn: dateOnlyString(statement.dueOn),

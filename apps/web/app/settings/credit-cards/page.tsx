@@ -16,6 +16,7 @@ type Card = {
   paymentDay: number;
   isActive: boolean;
   outstandingBalance: string;
+  availableCredit: string;
   currentStatement: {
     id: string;
     dueOn: string;
@@ -167,10 +168,10 @@ export default function CreditCardsPage() {
                     </span>
                     <span className="text-right">
                       <strong className="block tabular-nums">
-                        {format(card.outstandingBalance, card.currency)}
+                        {format(card.creditLimit, card.currency)}
                       </strong>
                       <span className="mt-1 block text-sm text-[var(--muted-foreground)]">
-                        Deuda total
+                        Línea de crédito
                       </span>
                     </span>
                   </button>
@@ -183,7 +184,9 @@ export default function CreditCardsPage() {
                   <div>
                     <h2 className="text-2xl font-semibold">{selected.name}</h2>
                     <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-                      Línea: {format(selected.creditLimit, selected.currency)}
+                      Línea: {format(selected.creditLimit, selected.currency)} · Deuda:{' '}
+                      {format(selected.outstandingBalance, selected.currency)} ·
+                      Disponible: {format(selected.availableCredit, selected.currency)}
                     </p>
                   </div>
                   <button

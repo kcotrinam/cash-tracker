@@ -157,7 +157,7 @@ function CreditCardPayments({ data }: { data: DashboardData }) {
             Tarjetas de crédito
           </h2>
           <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-            Pagos pendientes y deuda total.
+            Crédito disponible y próximos pagos.
           </p>
         </div>
         <Link
@@ -178,17 +178,11 @@ function CreditCardPayments({ data }: { data: DashboardData }) {
             </span>
             <span className="text-right">
               <strong className="block tabular-nums">
-                {formatMoney(
-                  card.statementBalance ?? card.outstandingBalance,
-                  data.currency,
-                  false,
-                  numberLocale,
-                )}
+                {formatMoney(card.availableCredit, data.currency, false, numberLocale)}
               </strong>
               <span className="mt-1 block text-sm text-[var(--muted-foreground)]">
-                {card.minimumPayment
-                  ? `Mínimo ${formatMoney(card.minimumPayment, data.currency, false, numberLocale)}`
-                  : 'Pendiente'}
+                Disponible de{' '}
+                {formatMoney(card.creditLimit, data.currency, false, numberLocale)}
               </span>
             </span>
           </li>

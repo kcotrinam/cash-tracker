@@ -179,6 +179,7 @@ export class CreditCardsService {
     const current = statements[0];
     return {
       outstandingBalance: money(Prisma.Decimal.max(debt, 0)),
+      availableCredit: money(Prisma.Decimal.max(card.creditLimit.minus(debt), 0)),
       currentStatement: current
         ? {
             ...current,
